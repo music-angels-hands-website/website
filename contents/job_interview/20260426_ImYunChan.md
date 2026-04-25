@@ -2,7 +2,7 @@
 
 ![](../assets/69a6113f-f384-4270-9235-1973b41d8f87.jpg)
 ![](../assets/a6b21cc0-dd1d-4ae0-8086-82f9e540607b.png)
-![](../assets/31548d6f-49eb-4162-8daf-75d89dac5a7c.jpg)
+![](../assets/547c7be0-4c2b-4bcf-bb17-62131a64e072.jpg)
 
 ## Interviewer: Thank you for joining us today, Yunchan. To start, could you briefly introduce yourself?
 
