@@ -411,6 +411,41 @@ details > .markdown-body { padding: 22px 24px; }
 .markdown-body ul { padding-left: 22px; color: var(--muted); }
 .markdown-card { align-content: start; }
 
+.content-image-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 10px;
+  margin: 4px 0;
+}
+
+.content-image {
+  margin: 0;
+}
+
+.content-image--25 {
+  grid-column: span 3;
+}
+
+.content-image--33 {
+  grid-column: span 4;
+}
+
+.content-image--50 {
+  grid-column: span 6;
+}
+
+.content-image--100 {
+  grid-column: 1 / -1;
+}
+
+.content-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  object-fit: contain;
+}
+
 /* EMPTY STATE */
 .empty-state { margin: 0; padding: 24px; color: var(--muted-light); font-weight: 500; font-style: italic; }
 .people-grid > .empty-state { grid-column: 1 / -1; }
@@ -711,6 +746,7 @@ details > .markdown-body { padding: 22px 24px; }
   .hero-actions, .link-row { flex-direction: column; }
   .button { width: 100%; justify-content: center; }
   .people-grid, .card-grid, .gallery-grid { grid-template-columns: 1fr; }
+  .content-image { grid-column: 1 / -1; }
   .timeline article { grid-template-columns: 1fr; }
   .markdown-article { padding: 22px; }
   .signup-form { padding: 22px; }

@@ -154,7 +154,40 @@ function titleFromFileName(fileName) {
     .trim() || "Untitled";
 }
 
-function parseMarkdown(markdown, fallbackTitle = "Untitled") {
+const imageLinePattern =
+  /^!\[([^\]]*)\]\(([^)]+)\)(?:\s*<!--\s*cms:image-size=(25|33|50|100)\s*-->)?$/;
+
+function assetUrlFromMarkdownPath(markdownPath, imagePath) {
+  if (/^(https?:|data:|\/)/.test(imagePath)) {
+    return imagePath;
+  }
+
+  const cleanMarkdownPath = String(markdownPath || "").split("?")[0];
+  const basePath = cleanMarkdownPath.includes("/") ? cleanMarkdownPath.slice(0, cleanMarkdownPath.lastIndexOf("/") + 1) : "";
+  return new URL(imagePath, `${window.location.origin}/${basePath}`).pathname;
+}
+
+function renderImageGrid(images) {
+  if (!images.length) {
+    return "";
+  }
+
+  return `
+    <div class="content-image-grid">
+      ${images
+        .map(
+          (image) => `
+            <figure class="content-image content-image--${image.size}">
+              <img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.alt)}" loading="lazy" />
+            </figure>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function parseMarkdown(markdown, fallbackTitle = "Untitled", markdownPath = "") {
   const normalized = String(markdown || "").replace(/\r\n?/g, "\n").trim();
   const lines = normalized.split("\n");
   const titleIndex = lines.findIndex((line) => /^#{1,2}\s+/.test(line.trim()));
@@ -163,6 +196,7 @@ function parseMarkdown(markdown, fallbackTitle = "Untitled") {
   const blocks = [];
   let paragraph = [];
   let listItems = [];
+  let imageItems = [];
 
   function flushParagraph() {
     if (!paragraph.length) {
@@ -180,11 +214,32 @@ function parseMarkdown(markdown, fallbackTitle = "Untitled") {
     listItems = [];
   }
 
+  function flushImages() {
+    if (!imageItems.length) {
+      return;
+    }
+    blocks.push(renderImageGrid(imageItems));
+    imageItems = [];
+  }
+
   bodyLines.forEach((line) => {
     const trimmed = line.trim();
     if (!trimmed) {
       flushParagraph();
       flushList();
+      flushImages();
+      return;
+    }
+
+    const imageMatch = trimmed.match(imageLinePattern);
+    if (imageMatch) {
+      flushParagraph();
+      flushList();
+      imageItems.push({
+        alt: imageMatch[1],
+        src: assetUrlFromMarkdownPath(markdownPath, imageMatch[2]),
+        size: imageMatch[3] || "33"
+      });
       return;
     }
 
@@ -192,6 +247,7 @@ function parseMarkdown(markdown, fallbackTitle = "Untitled") {
     if (heading) {
       flushParagraph();
       flushList();
+      flushImages();
       const level = Math.min(6, Math.max(3, heading[1].length + 1));
       blocks.push(`<h${level}>${renderInlineMarkdown(heading[2])}</h${level}>`);
       return;
@@ -200,16 +256,19 @@ function parseMarkdown(markdown, fallbackTitle = "Untitled") {
     const listItem = trimmed.match(/^[-*]\s+(.+)$/);
     if (listItem) {
       flushParagraph();
+      flushImages();
       listItems.push(listItem[1]);
       return;
     }
 
     flushList();
+    flushImages();
     paragraph.push(trimmed);
   });
 
   flushParagraph();
   flushList();
+  flushImages();
 
   return { title, body: blocks.join("") };
 }
@@ -299,7 +358,7 @@ async function fetchMarkdownItems(config, files) {
           return null;
         }
         const markdown = await response.text();
-        const parsed = parseMarkdown(markdown, titleFromFileName(fileName));
+        const parsed = parseMarkdown(markdown, titleFromFileName(fileName), path);
         return { fileName, path, ...parsed, dateInfo: parseDateFromFileName(fileName) };
       } catch {
         return null;
