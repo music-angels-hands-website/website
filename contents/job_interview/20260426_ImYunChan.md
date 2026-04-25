@@ -1,8 +1,8 @@
 # Job Interview with Yunchan Lim
 
 ![](../assets/69a6113f-f384-4270-9235-1973b41d8f87.jpg)
-![](../assets/26f2ae8e-6de4-4869-ac61-c79bd893fcd9.png)
 ![](../assets/e15c4c56-6133-4f85-a38e-71a5b7c208b1.jpg)
+![](../assets/a6b21cc0-dd1d-4ae0-8086-82f9e540607b.png)
 
 ## Interviewer: Thank you for joining us today, Yunchan. To start, could you briefly introduce yourself?
 
