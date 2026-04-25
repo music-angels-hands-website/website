@@ -8,16 +8,27 @@
   ],
   "musicQ": [],
   "monthlyQna": [],
-  "jobInterview": [],
+  "jobInterview": [
+    "20260425.md"
+  ],
   "musicJourney": [],
   "event": [],
   "news": [
     "20260424.md"
   ],
+  "__generatedAt": "2026-04-25T07:40:13.946Z",
   "board": {
     "2026": [
       "01_President.md",
-      "02_VicePresident.md"
+      "02_VicePresident.md",
+      "03_Secretary.md",
+      "04_Treasurer.md",
+      "05_EventDirector.md",
+      "06_VideoPhotoDirector.md",
+      "07_OutreachDirector.md",
+      "08_WebsiteDirector.md",
+      "09_AngelsTimesDirector.md",
+      "10_PropsDirector.md"
     ]
   }
 }

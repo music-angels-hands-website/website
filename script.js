@@ -6,11 +6,14 @@ const mainLinks = Array.from(document.querySelectorAll("[data-page-link]"));
 const pageSections = Array.from(document.querySelectorAll(".page-section[id]"));
 const signupForm = document.querySelector(".signup-form");
 const formNote = document.querySelector(".form-note");
+const signupEndpoint =
+  "https://script.google.com/macros/s/AKfycbwpBaYQNH2pRSkebK2lcntwi_ADO_IRxhikcmdIzi5SY7QyErBPaFa8HeC2P74rxxxu/exec";
 
 const contentManifestPath = "content-manifest.json";
-const manifestPromise = fetch(contentManifestPath)
+const manifestPromise = fetch(`${contentManifestPath}?v=${Date.now()}`, { cache: "no-store" })
   .then((response) => (response.ok ? response.json() : null))
   .catch(() => null);
+const contentVersionPromise = manifestPromise.then((manifest) => manifest?.__generatedAt || Date.now());
 
 const googleDriveGalleryFolderId = "1PAjJmVMmNn97xRsW4r3FSHVA__hhfIBW";
 let sessionGoogleDriveApiKey = "";
@@ -215,11 +218,12 @@ function getFileName(path) {
   return String(path || "").split("/").pop() || "";
 }
 
-function fileUrl(folder, fileName) {
+function fileUrl(folder, fileName, version = "") {
   if (/^https?:\/\//.test(fileName) || fileName.startsWith("/")) {
     return fileName;
   }
-  return `${folder}/${fileName}`;
+  const suffix = version ? `?v=${encodeURIComponent(version)}` : "";
+  return `${folder}/${fileName}${suffix}`;
 }
 
 function sortByNameAsc(items) {
@@ -277,16 +281,18 @@ async function getManifestFiles(config) {
 }
 
 async function fetchMarkdownItems(config, files) {
+  const contentVersion = await contentVersionPromise;
   const responses = await Promise.all(
     files.map(async (fileName) => {
       try {
-        const response = await fetch(fileUrl(config.folder, fileName));
+        const path = fileUrl(config.folder, fileName, contentVersion);
+        const response = await fetch(path, { cache: "no-store" });
         if (!response.ok) {
           return null;
         }
         const markdown = await response.text();
         const parsed = parseMarkdown(markdown, titleFromFileName(fileName));
-        return { fileName, path: fileUrl(config.folder, fileName), ...parsed, dateInfo: parseDateFromFileName(fileName) };
+        return { fileName, path, ...parsed, dateInfo: parseDateFromFileName(fileName) };
       } catch {
         return null;
       }
@@ -863,12 +869,33 @@ document.querySelectorAll("details[data-content-page]").forEach((details) => {
 window.addEventListener("hashchange", routeToCurrentHash);
 window.addEventListener("resize", updateHeaderHeight);
 
-signupForm.addEventListener("submit", (event) => {
+signupForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const formData = new FormData(signupForm);
-  const name = String(formData.get("name") || "friend").trim() || "friend";
-  formNote.textContent = `Thank you, ${name}. We will keep you posted.`;
-  signupForm.reset();
+  const submitButton = signupForm.querySelector('button[type="submit"]');
+  const payload = {
+    name: String(formData.get("name") || "").trim(),
+    email: String(formData.get("email") || "").trim(),
+    phone: String(formData.get("phone") || "").trim(),
+    message: String(formData.get("message") || "").trim()
+  };
+
+  submitButton.disabled = true;
+  formNote.textContent = "Sending...";
+
+  try {
+    await fetch(signupEndpoint, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+
+    formNote.textContent = `Thank you${payload.name ? `, ${payload.name}` : ""}. We will keep you posted.`;
+    signupForm.reset();
+  } catch {
+    formNote.textContent = "We could not send your message. Please try again.";
+  } finally {
+    submitButton.disabled = false;
+  }
 });
 
 updateHeaderHeight();

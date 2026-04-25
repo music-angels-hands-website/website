@@ -639,7 +639,8 @@ details > .markdown-body { padding: 22px 24px; }
   color: var(--muted);
   text-transform: uppercase;
 }
-.signup-form input {
+.signup-form input,
+.signup-form textarea {
   min-height: 48px;
   border: 1.5px solid var(--line-warm);
   border-radius: var(--radius-sm);
@@ -649,7 +650,12 @@ details > .markdown-body { padding: 22px 24px; }
   background: var(--paper);
   transition: border-color 0.18s, box-shadow 0.18s;
 }
-.signup-form input:focus {
+.signup-form textarea {
+  min-height: 116px;
+  resize: vertical;
+}
+.signup-form input:focus,
+.signup-form textarea:focus {
   outline: none;
   border-color: var(--teal);
   box-shadow: 0 0 0 3px rgba(45, 122, 110, 0.15);
@@ -986,7 +992,8 @@ dialog[open] {
 }
 
 /* -- Signup form: focus glow ------------------ */
-.signup-form input:focus {
+.signup-form input:focus,
+.signup-form textarea:focus {
   transform: scale(1.01);
   border-color: var(--teal);
   box-shadow: 0 0 0 4px rgba(45, 122, 110, 0.18),

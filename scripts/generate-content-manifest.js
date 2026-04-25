@@ -31,6 +31,8 @@ const manifest = Object.fromEntries(
   Object.entries(folders).map(([key, folder]) => [key, markdownFiles(path.join(contentsRoot, folder))])
 );
 
+manifest.__generatedAt = new Date().toISOString();
+
 const boardRoot = path.join(contentsRoot, "board");
 manifest.board = {};
 
