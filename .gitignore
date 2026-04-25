@@ -141,3 +141,6 @@ vite.config.ts.timestamp-*
 # Generated app metadata lives at the repository root.
 # Keep contents/ replaceable and free of app-owned files.
 contents/manifest.json
+
+# Local runtime configuration must not be committed.
+config.local.js

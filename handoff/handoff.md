@@ -34,7 +34,7 @@ Examples:
 - `#board`
 - `#music-journey`
 - `#upcoming-events`
-- `#gallery-current`
+- `#gallery`
 - `#latest-news`
 - `#how-to-join`
 
@@ -111,9 +111,14 @@ Event:
 
 Gallery:
 
-- `galleryCollections` object
-- Placeholder structure mirrors future Google Drive folders
-- No Google Drive connection is active yet
+- Gallery no longer has a submenu.
+- The root Google Drive folder ID is stored in `script.js`.
+- The Google Drive API key is not stored in the repository.
+- `script.js` reads `window.MUSIC_ANGELS_GOOGLE_API_KEY` if a runtime environment provides it.
+- If no runtime key is present, the page prompts for the key and keeps it in memory for the current browser session only.
+- Root folder subfolders are sorted by created date descending and rendered as collapsed sections.
+- Media inside a folder is loaded only when that folder section is opened.
+- Images and videos render as preview cards. Clicking a card opens a large dialog with previous/next navigation. Videos use the Google Drive preview player.
 
 News:
 
@@ -142,6 +147,34 @@ Do not store keys, secrets, service account credentials, private Google Drive to
 Firebase client config is usually public configuration, not a secret, but access still must be protected through Firebase Security Rules.
 
 Google Drive API keys and protected folder access should not be trusted in client-side code. If protected access is needed, use a server-side layer such as Firebase Functions.
+
+`config.local.js` is ignored by Git. It can be used by a local or deployment environment to define `window.MUSIC_ANGELS_GOOGLE_API_KEY` before `script.js` loads, but API keys must not be committed.
+
+## GitHub Pages Deployment
+
+GitHub Pages deployment is configured in:
+
+```text
+.github/workflows/pages.yml
+```
+
+The workflow:
+
+- runs on pushes to `main`
+- regenerates `content-manifest.json`
+- creates `config.local.js` from the GitHub Actions secret named `GOOGLE_DRIVE_API_KEY`
+- uploads the static site artifact
+- deploys it with GitHub Pages Actions
+
+Repository setup required in GitHub:
+
+1. Go to repository `Settings`.
+2. Open `Secrets and variables` -> `Actions`.
+3. Add a repository secret named `GOOGLE_DRIVE_API_KEY`.
+4. Open `Settings` -> `Pages`.
+5. Set `Build and deployment` source to `GitHub Actions`.
+
+The API key is not committed to Git, but it is still visible to browsers in the deployed `config.local.js`. Restrict the key in Google Cloud Console to the Google Drive API and the deployed GitHub Pages domain or custom domain.
 
 ## Verification Done
 

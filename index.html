@@ -27,7 +27,7 @@
         <a href="#about" data-page-link="about" data-default-target="mission-vision">About</a>
         <a href="#programs" data-page-link="programs" data-default-target="music-journey">Programs</a>
         <a href="#event" data-page-link="event" data-default-target="upcoming-events">Event</a>
-        <a href="#gallery" data-page-link="gallery" data-default-target="gallery-current">Gallery</a>
+        <a href="#gallery" data-page-link="gallery">Gallery</a>
         <a href="#news" data-page-link="news" data-default-target="latest-news">News</a>
         <a href="#join" data-page-link="join" data-default-target="how-to-join">Join/Volunteer</a>
       </nav>
@@ -156,38 +156,12 @@
         <div class="page-hero section-mint">
           <div class="section-inner">
             <p class="eyebrow">Gallery</p>
-            <h1 id="gallery-title">Photo folders by collection.</h1>
-            <p class="page-intro">This placeholder mirrors the future Google Drive folder structure without storing API keys in the site.</p>
+            <h1 id="gallery-title">Photos and videos from Music Angels Hands.</h1>
+            <p class="page-intro">Gallery folders are loaded from Google Drive when opened.</p>
           </div>
         </div>
-        <nav class="sub-nav" aria-label="Gallery collections">
-          <a href="#gallery-current">Current Year</a>
-          <a href="#gallery-performances">Performances</a>
-          <a href="#gallery-service">Service Projects</a>
-        </nav>
-        <section class="section-white page-section" id="gallery-current">
-          <div class="section-inner accordion-list">
-            <details open data-lazy-gallery="current-year">
-              <summary>Current Year</summary>
-              <div class="gallery-sections" aria-live="polite"></div>
-            </details>
-          </div>
-        </section>
-        <section class="section-white page-section" id="gallery-performances">
-          <div class="section-inner accordion-list">
-            <details open data-lazy-gallery="performances">
-              <summary>Performances</summary>
-              <div class="gallery-sections" aria-live="polite"></div>
-            </details>
-          </div>
-        </section>
-        <section class="section-white page-section" id="gallery-service">
-          <div class="section-inner accordion-list">
-            <details open data-lazy-gallery="service-projects">
-              <summary>Service Projects</summary>
-              <div class="gallery-sections" aria-live="polite"></div>
-            </details>
-          </div>
+        <section class="section-white">
+          <div class="section-inner accordion-list" data-google-gallery aria-live="polite"></div>
         </section>
       </section>
 
@@ -264,6 +238,7 @@
       <a href="#home">Back to top</a>
     </footer>
 
+    <script src="config.local.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

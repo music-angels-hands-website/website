@@ -397,8 +397,7 @@ details > :not(summary) {
 
 .people-grid article,
 .simple-card,
-.dynamic-card,
-.gallery-card {
+.dynamic-card {
   min-height: 100%;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -409,7 +408,6 @@ details > :not(summary) {
 .people-grid p,
 .simple-card p,
 .dynamic-card p,
-.gallery-card p,
 .markdown-body p {
   color: var(--muted);
 }
@@ -538,7 +536,8 @@ details > .markdown-body {
   font-weight: 900;
 }
 
-.content-dialog {
+.content-dialog,
+.gallery-dialog {
   width: min(760px, calc(100% - 32px));
   max-height: min(760px, calc(100svh - 32px));
   border: 0;
@@ -548,7 +547,8 @@ details > .markdown-body {
   color: var(--ink);
 }
 
-.content-dialog::backdrop {
+.content-dialog::backdrop,
+.gallery-dialog::backdrop {
   background: rgba(19, 35, 31, 0.62);
   backdrop-filter: blur(4px);
 }
@@ -592,33 +592,172 @@ details > .markdown-body {
   margin: 0;
 }
 
-.gallery-sections {
+.gallery-config {
   display: grid;
-  gap: 18px;
-  padding: 18px;
-}
-
-.gallery-section {
-  display: grid;
+  justify-items: start;
   gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: var(--shadow);
 }
 
-.gallery-section h3 {
-  font-size: 1.15rem;
+.gallery-config .empty-state {
+  padding: 0;
+}
+
+.gallery-folder summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.gallery-folder summary::after {
+  flex: 0 0 auto;
+  order: 3;
+}
+
+.gallery-folder summary time {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .gallery-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  padding: 0;
+  padding: 18px;
 }
 
 .gallery-card {
-  min-height: 120px;
+  position: relative;
+  display: grid;
+  min-height: 180px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--white);
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.gallery-card img {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  object-fit: cover;
+  transition: transform 180ms ease;
+}
+
+.gallery-card:hover img,
+.gallery-card:focus-visible img {
+  transform: scale(1.035);
+}
+
+.gallery-card-meta {
+  grid-area: 1 / 1;
+  align-self: end;
+  display: grid;
+  gap: 2px;
+  padding: 34px 12px 12px;
+  background: linear-gradient(0deg, rgba(19, 35, 31, 0.86), rgba(19, 35, 31, 0));
+}
+
+.gallery-card-meta strong,
+.gallery-card-meta small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gallery-card-meta small {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.gallery-dialog {
+  width: min(1120px, calc(100% - 28px));
+  max-height: calc(100svh - 28px);
+}
+
+.gallery-dialog-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  max-height: calc(100svh - 28px);
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.gallery-dialog-toolbar {
   display: flex;
-  align-items: flex-end;
-  background:
-    linear-gradient(135deg, rgba(15, 118, 110, 0.12), rgba(244, 197, 66, 0.24)),
-    var(--white);
+  justify-content: flex-end;
+}
+
+.gallery-stage {
+  display: grid;
+  place-items: center;
+  min-height: min(66svh, 680px);
+  overflow: hidden;
+  border-radius: 8px;
+  background: #050807;
+}
+
+.gallery-stage img,
+.gallery-stage iframe {
+  display: block;
+  width: 100%;
+  height: min(66svh, 680px);
+  border: 0;
+  object-fit: contain;
+}
+
+.gallery-dialog-footer {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.gallery-dialog-footer div {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.gallery-dialog-footer strong {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gallery-dialog-footer small {
+  color: rgba(255, 255, 255, 0.74);
+  font-weight: 800;
+}
+
+.gallery-nav-button {
+  min-height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--white);
+  padding: 9px 13px;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
 }
 
 .signup-form {

@@ -12,20 +12,8 @@ const manifestPromise = fetch(contentManifestPath)
   .then((response) => (response.ok ? response.json() : null))
   .catch(() => null);
 
-const galleryCollections = {
-  "current-year": [
-    { section: "Spring Projects", photos: ["Planning Meeting", "Volunteer Table", "Music Practice", "Donation Prep"] },
-    { section: "Member Moments", photos: ["Team Photo", "Student Leaders", "Workshop Notes"] }
-  ],
-  performances: [
-    { section: "Benefit Concerts", photos: ["Piano Solo", "Ensemble", "Audience Welcome"] },
-    { section: "Community Visits", photos: ["Warmup", "Program Sheet", "Closing Song"] }
-  ],
-  "service-projects": [
-    { section: "Donation Drives", photos: ["Sorting Supplies", "Packing Boxes", "Delivery Prep"] },
-    { section: "Care Campaigns", photos: ["Cards", "Care Kits", "Partner Table"] }
-  ]
-};
+const googleDriveGalleryFolderId = "1PAjJmVMmNn97xRsW4r3FSHVA__hhfIBW";
+let sessionGoogleDriveApiKey = "";
 
 const contentConfig = {
   mission: { manifestKey: "mission", folder: "contents/mission", mode: "fullAsc" },
@@ -263,6 +251,14 @@ function formatDate(dateValue) {
     day: "numeric",
     year: "numeric"
   }).format(new Date(`${dateValue}T12:00:00`));
+}
+
+function formatDateTime(dateValue) {
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  }).format(new Date(dateValue));
 }
 
 function showNoContents(container) {
@@ -547,26 +543,280 @@ async function renderContentContainer(container) {
   }
 }
 
-function renderGallery(details) {
-  if (details.dataset.loaded === "true") {
+function getGoogleDriveApiKey() {
+  if (sessionGoogleDriveApiKey) {
+    return sessionGoogleDriveApiKey;
+  }
+
+  const configuredKey = window.MUSIC_ANGELS_GOOGLE_API_KEY;
+  if (typeof configuredKey === "string" && configuredKey.trim()) {
+    sessionGoogleDriveApiKey = configuredKey.trim();
+    return sessionGoogleDriveApiKey;
+  }
+
+  return "";
+}
+
+function requestGoogleDriveApiKey() {
+  const apiKey = window.prompt("Google Drive API key");
+  if (!apiKey?.trim()) {
+    return "";
+  }
+
+  sessionGoogleDriveApiKey = apiKey.trim();
+  return sessionGoogleDriveApiKey;
+}
+
+function buildDriveApiUrl(params) {
+  const apiKey = getGoogleDriveApiKey();
+  if (!apiKey) {
+    return "";
+  }
+
+  const url = new URL("https://www.googleapis.com/drive/v3/files");
+  Object.entries(params).forEach(([key, value]) => {
+    if (value) {
+      url.searchParams.set(key, value);
+    }
+  });
+  url.searchParams.set("key", apiKey);
+  return url.toString();
+}
+
+async function listDriveFiles(folderId, options = {}) {
+  const files = [];
+  let pageToken = "";
+  const q = [`'${folderId}' in parents`, "trashed = false"];
+  if (options.mimePrefix) {
+    q.push(`mimeType contains '${options.mimePrefix}'`);
+  }
+  if (options.mimeType) {
+    q.push(`mimeType = '${options.mimeType}'`);
+  }
+
+  do {
+    const url = buildDriveApiUrl({
+      q: q.join(" and "),
+      orderBy: options.orderBy || "createdTime desc",
+      pageSize: "100",
+      pageToken,
+      fields:
+        "nextPageToken,files(id,name,mimeType,createdTime,thumbnailLink,webContentLink,webViewLink,imageMediaMetadata(width,height),videoMediaMetadata(width,height,durationMillis))"
+    });
+
+    if (!url) {
+      throw new Error("missing-api-key");
+    }
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("drive-request-failed");
+    }
+    const data = await response.json();
+    files.push(...(data.files || []));
+    pageToken = data.nextPageToken || "";
+  } while (pageToken);
+
+  return files;
+}
+
+function isGalleryMedia(file) {
+  return file.mimeType?.startsWith("image/") || file.mimeType?.startsWith("video/");
+}
+
+function mediaPreviewUrl(file) {
+  if (file.thumbnailLink) {
+    return file.thumbnailLink.replace(/=s\d+$/, "=s640");
+  }
+
+  return `https://drive.google.com/thumbnail?id=${encodeURIComponent(file.id)}&sz=w640`;
+}
+
+function imageViewUrl(file) {
+  return `https://drive.google.com/thumbnail?id=${encodeURIComponent(file.id)}&sz=w1600`;
+}
+
+function videoEmbedUrl(file) {
+  return `https://drive.google.com/file/d/${encodeURIComponent(file.id)}/preview`;
+}
+
+function mediaKind(file) {
+  return file.mimeType?.startsWith("video/") ? "Video" : "Photo";
+}
+
+async function renderGoogleGallery(container) {
+  if (container.dataset.loaded === "true" || container.dataset.loading === "true") {
     return;
   }
 
-  const collection = galleryCollections[details.dataset.lazyGallery] || [];
-  const container = details.querySelector(".gallery-sections");
-  container.innerHTML = collection
-    .map(
-      (section) => `
-        <section class="gallery-section">
-          <h3>${section.section}</h3>
-          <div class="gallery-grid">
-            ${section.photos.map((photo) => `<article class="gallery-card"><strong>${photo}</strong></article>`).join("")}
-          </div>
-        </section>
-      `
-    )
-    .join("");
-  details.dataset.loaded = "true";
+  if (!getGoogleDriveApiKey()) {
+    container.innerHTML = `
+      <div class="gallery-config">
+        <p class="empty-state">No Contents</p>
+        <button class="button button-primary" type="button" data-gallery-key-button>Load Gallery</button>
+      </div>
+    `;
+    container.querySelector("[data-gallery-key-button]")?.addEventListener("click", () => {
+      if (requestGoogleDriveApiKey()) {
+        delete container.dataset.loaded;
+        renderGoogleGallery(container);
+      }
+    });
+    container.dataset.loaded = "true";
+    return;
+  }
+
+  container.dataset.loading = "true";
+  container.innerHTML = '<p class="empty-state">Loading...</p>';
+
+  try {
+    const folders = await listDriveFiles(googleDriveGalleryFolderId, {
+      mimeType: "application/vnd.google-apps.folder",
+      orderBy: "createdTime desc"
+    });
+
+    if (!folders.length) {
+      showNoContents(container);
+      return;
+    }
+
+    container.innerHTML = folders
+      .map(
+        (folder, index) => `
+          <details class="gallery-folder" data-gallery-folder-id="${escapeHtml(folder.id)}" data-gallery-folder-index="${index}">
+            <summary>
+              <span>${escapeHtml(folder.name)}</span>
+              <time datetime="${escapeHtml(folder.createdTime)}">${formatDateTime(folder.createdTime)}</time>
+            </summary>
+            <div class="gallery-grid" aria-live="polite"></div>
+          </details>
+        `
+      )
+      .join("");
+
+    container.querySelectorAll(".gallery-folder").forEach((details) => {
+      details.addEventListener("toggle", () => {
+        if (details.open) {
+          renderGalleryFolder(details);
+        }
+      });
+    });
+    container.dataset.loaded = "true";
+  } catch {
+    showNoContents(container);
+  } finally {
+    delete container.dataset.loading;
+  }
+}
+
+async function renderGalleryFolder(details) {
+  if (details.dataset.loaded === "true" || details.dataset.loading === "true") {
+    return;
+  }
+
+  const folderId = details.dataset.galleryFolderId;
+  const grid = details.querySelector(".gallery-grid");
+  details.dataset.loading = "true";
+  grid.innerHTML = '<p class="empty-state">Loading...</p>';
+
+  try {
+    const files = (await listDriveFiles(folderId, { orderBy: "createdTime desc" })).filter(isGalleryMedia);
+    if (!files.length) {
+      grid.innerHTML = '<p class="empty-state">No Contents</p>';
+      details.dataset.loaded = "true";
+      return;
+    }
+
+    grid.innerHTML = files
+      .map(
+        (file, index) => `
+          <button class="gallery-card" type="button" data-gallery-media-index="${index}">
+            <img src="${escapeHtml(mediaPreviewUrl(file))}" alt="" loading="lazy" />
+            <span class="gallery-card-meta">
+              <strong>${escapeHtml(file.name)}</strong>
+              <small>${mediaKind(file)}</small>
+            </span>
+          </button>
+        `
+      )
+      .join("");
+
+    grid.querySelectorAll("[data-gallery-media-index]").forEach((button) => {
+      button.addEventListener("click", () => {
+        openGalleryDialog(files, Number(button.dataset.galleryMediaIndex));
+      });
+    });
+    details.dataset.loaded = "true";
+  } catch {
+    grid.innerHTML = '<p class="empty-state">No Contents</p>';
+  } finally {
+    delete details.dataset.loading;
+  }
+}
+
+function openGalleryDialog(files, startIndex) {
+  let currentIndex = startIndex;
+  const dialog = document.createElement("dialog");
+  dialog.className = "gallery-dialog";
+  dialog.innerHTML = `
+    <div class="gallery-dialog-panel">
+      <div class="gallery-dialog-toolbar">
+        <button class="dialog-close" type="button" aria-label="Close">Close</button>
+      </div>
+      <div class="gallery-stage"></div>
+      <div class="gallery-dialog-footer">
+        <button class="gallery-nav-button" type="button" data-gallery-prev aria-label="Previous">Prev</button>
+        <div>
+          <strong data-gallery-title></strong>
+          <small data-gallery-count></small>
+        </div>
+        <button class="gallery-nav-button" type="button" data-gallery-next aria-label="Next">Next</button>
+      </div>
+    </div>
+  `;
+
+  const stage = dialog.querySelector(".gallery-stage");
+  const title = dialog.querySelector("[data-gallery-title]");
+  const count = dialog.querySelector("[data-gallery-count]");
+  const prev = dialog.querySelector("[data-gallery-prev]");
+  const next = dialog.querySelector("[data-gallery-next]");
+
+  function renderCurrent() {
+    const file = files[currentIndex];
+    title.textContent = file.name;
+    count.textContent = `${currentIndex + 1} / ${files.length}`;
+    if (file.mimeType?.startsWith("video/")) {
+      stage.innerHTML = `<iframe src="${escapeHtml(videoEmbedUrl(file))}" title="${escapeHtml(file.name)}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+    } else {
+      stage.innerHTML = `<img src="${escapeHtml(imageViewUrl(file))}" alt="${escapeHtml(file.name)}" />`;
+    }
+  }
+
+  function move(direction) {
+    currentIndex = (currentIndex + direction + files.length) % files.length;
+    renderCurrent();
+  }
+
+  prev.addEventListener("click", () => move(-1));
+  next.addEventListener("click", () => move(1));
+  dialog.querySelector(".dialog-close").addEventListener("click", () => dialog.close());
+  dialog.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") {
+      move(-1);
+    } else if (event.key === "ArrowRight") {
+      move(1);
+    }
+  });
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) {
+      dialog.close();
+    }
+  });
+  dialog.addEventListener("close", () => dialog.remove());
+
+  document.body.append(dialog);
+  renderCurrent();
+  dialog.showModal();
 }
 
 function loadActiveSubpage(activeSubpageId) {
@@ -576,10 +826,8 @@ function loadActiveSubpage(activeSubpageId) {
       renderContentContainer(container);
     }
   });
-  activeSection?.querySelectorAll("[data-lazy-gallery]").forEach((details) => {
-    if (details.open) {
-      renderGallery(details);
-    }
+  activeSection?.querySelectorAll("[data-google-gallery]").forEach((container) => {
+    renderGoogleGallery(container);
   });
 }
 
@@ -609,14 +857,6 @@ document.querySelectorAll("details[data-content-page]").forEach((details) => {
   details.addEventListener("toggle", () => {
     if (details.open) {
       renderContentContainer(details);
-    }
-  });
-});
-
-document.querySelectorAll("[data-lazy-gallery]").forEach((details) => {
-  details.addEventListener("toggle", () => {
-    if (details.open) {
-      renderGallery(details);
     }
   });
 });
