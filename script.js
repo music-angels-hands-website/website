@@ -234,6 +234,14 @@ function sortByNameDesc(items) {
   return sortByNameAsc(items).reverse();
 }
 
+function formatBoardYear(year) {
+  const startYear = Number(year);
+  if (!Number.isInteger(startYear)) {
+    return year;
+  }
+  return `${startYear}-${startYear + 1}`;
+}
+
 function parseDateFromFileName(fileName) {
   const name = getFileName(fileName);
   const digits = name.match(/\d{8}/)?.[0];
@@ -372,7 +380,7 @@ async function renderBoard(container, config) {
 
       return `
         <details ${index === 0 ? "open" : ""}>
-          <summary>${escapeHtml(year)}</summary>
+          <summary>${escapeHtml(formatBoardYear(year))}</summary>
           <div class="people-grid">${cards}</div>
         </details>
       `;
@@ -889,7 +897,7 @@ signupForm.addEventListener("submit", async (event) => {
       body: JSON.stringify(payload)
     });
 
-    formNote.textContent = `Thank you${payload.name ? `, ${payload.name}` : ""}. We will keep you posted.`;
+    formNote.textContent = `Thank you${payload.name ? `, ${payload.name}` : ""}. We will contact you soon, so please watch for our reply email.`;
     signupForm.reset();
   } catch {
     formNote.textContent = "We could not send your message. Please try again.";
