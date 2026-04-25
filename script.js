@@ -124,10 +124,7 @@ function routeToCurrentHash() {
   updateSubNavState(activeSubpageId);
   loadActiveSubpage(activeSubpageId);
   scrollToHashTarget(activeSubpageId);
-  // Trigger wave animation for the now-active page
-  if (typeof window._refreshWaves === 'function') {
-    window._refreshWaves();
-  }
+  if (typeof window._waveRefresh === 'function') window._waveRefresh();
 }
 
 function escapeHtml(value) {
@@ -1092,12 +1089,15 @@ document.addEventListener('click', (e) => {
   function resizeCanvas(canvas) {
     const hero = canvas.closest('.page-hero');
     if (!hero) return;
-    const rect = hero.getBoundingClientRect();
+    // offsetWidth/Height work even right after display:block,
+    // unlike getBoundingClientRect which can return 0 mid-transition
+    const w = hero.offsetWidth  || hero.parentElement?.offsetWidth  || window.innerWidth;
+    const h = hero.offsetHeight || hero.parentElement?.offsetHeight || 300;
     const dpr = window.devicePixelRatio || 1;
-    canvas.width  = rect.width  * dpr;
-    canvas.height = rect.height * dpr;
-    canvas.style.width  = rect.width  + 'px';
-    canvas.style.height = rect.height + 'px';
+    canvas.width  = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width  = w + 'px';
+    canvas.style.height = h + 'px';
     const ctx = canvas.getContext('2d');
     ctx.scale(dpr, dpr);
   }
@@ -1145,20 +1145,28 @@ document.addEventListener('click', (e) => {
     // Stop all first
     document.querySelectorAll('.wave-canvas').forEach(stopCanvas);
 
-    // Start only the active page's heroes
-    const activePage = document.querySelector('.page.is-active');
-    if (!activePage) return;
+    // Double rAF: first frame lets display:block apply,
+    // second frame lets the browser measure layout correctly
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const activePage = document.querySelector('.page.is-active');
+        if (!activePage) return;
 
-    activePage.querySelectorAll('.page-hero').forEach(hero => {
-      const existing = hero.querySelector('.wave-canvas');
-      if (existing) {
-        resizeCanvas(existing);
-        startCanvas(existing);
-      } else {
-        initCanvas(hero);
-      }
+        activePage.querySelectorAll('.page-hero').forEach(hero => {
+          const existing = hero.querySelector('.wave-canvas');
+          if (existing) {
+            resizeCanvas(existing);
+            startCanvas(existing);
+          } else {
+            initCanvas(hero);
+          }
+        });
+      });
     });
   }
+
+  // Expose for routeToCurrentHash
+  window._waveRefresh = refreshWaves;
 
   // Resize handler
   let resizeTimer;
@@ -1169,6 +1177,6 @@ document.addEventListener('click', (e) => {
     }, 150);
   }, { passive: true });
 
-  // Expose so routeToCurrentHash can call it
-  window._refreshWaves = refreshWaves;
+  // Initial load
+  // Initial call handled by routeToCurrentHash() at page load
 })();
