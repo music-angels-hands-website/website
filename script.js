@@ -874,3 +874,304 @@ signupForm.addEventListener("submit", (event) => {
 
 updateHeaderHeight();
 routeToCurrentHash();
+
+
+/* ============================================
+   BOLD ANIMATION ENHANCEMENTS
+   ============================================ */
+
+// -- Scroll progress bar ---------------------
+(function () {
+  const bar = document.createElement('div');
+  bar.id = 'scroll-progress';
+  document.body.prepend(bar);
+
+  window.addEventListener('scroll', () => {
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = total > 0 ? `${(window.scrollY / total) * 100}%` : '0%';
+  }, { passive: true });
+})();
+
+// -- Ripple helper ---------------------------
+function addRipple(el, event, cls = 'btn-ripple') {
+  const rect = el.getBoundingClientRect();
+  const ripple = document.createElement('span');
+  ripple.className = cls;
+  const size = Math.max(rect.width, rect.height) * 1.6;
+  ripple.style.cssText = `
+    width:${size}px; height:${size}px;
+    left:${event.clientX - rect.left - size / 2}px;
+    top:${event.clientY - rect.top - size / 2}px;
+  `;
+  el.appendChild(ripple);
+  ripple.addEventListener('animationend', () => ripple.remove());
+}
+
+// -- Button ripple ---------------------------
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.button');
+  if (btn) addRipple(btn, e, 'btn-ripple');
+});
+
+// -- Nav ripple ------------------------------
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('.site-nav a');
+  if (link) addRipple(link, e, 'nav-ripple');
+});
+
+// -- Scroll reveal ---------------------------
+(function () {
+  const revealEls = [
+    '.section-inner > h2',
+    '.section-inner > p',
+    '.section-heading',
+    '.markdown-article',
+    '.simple-card',
+    '.accordion-list > details',
+    '.timeline article',
+    '.title-button',
+    '.signup-form',
+    '.contact-panel > *',
+  ];
+
+  function markRevealTargets() {
+    revealEls.forEach((sel) => {
+      document.querySelectorAll(sel).forEach((el, i) => {
+        if (!el.classList.contains('reveal')) {
+          el.classList.add('reveal');
+          // stagger siblings
+          const siblings = Array.from(el.parentElement.children).filter(c =>
+            c.classList.contains('reveal') && !c.classList.contains('is-visible')
+          );
+          const idx = siblings.indexOf(el);
+          if (idx > 0 && idx <= 4) {
+            el.classList.add(`reveal-delay-${idx}`);
+          }
+        }
+      });
+    });
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  function observeAll() {
+    document.querySelectorAll('.reveal:not(.is-visible)').forEach(el => observer.observe(el));
+  }
+
+  // Re-run after each page/subpage switch
+  const origSetActivePage = window._origSetActivePage || setActivePage;
+  window._origSetActivePage = origSetActivePage;
+
+  function refreshReveal() {
+    markRevealTargets();
+    // Small delay so display:block kicks in first
+    setTimeout(observeAll, 60);
+  }
+
+  // Hook into hashchange
+  window.addEventListener('hashchange', refreshReveal);
+
+  // Initial run
+  markRevealTargets();
+  setTimeout(observeAll, 120);
+
+  // Also observe dynamically added content
+  const mutObs = new MutationObserver(() => {
+    markRevealTargets();
+    observeAll();
+  });
+  mutObs.observe(document.querySelector('main'), { childList: true, subtree: true });
+})();
+
+// -- Accordion: smooth height animation ------
+(function () {
+  // We rely on CSS animation for the content block appearance,
+  // but add a class to <details> for the summary indent cue.
+  document.addEventListener('toggle', (e) => {
+    const details = e.target.closest('details');
+    if (!details) return;
+    if (details.open) {
+      details.classList.add('just-opened');
+      setTimeout(() => details.classList.remove('just-opened'), 400);
+    }
+  }, true);
+})();
+
+// -- sub-nav active pulse on click -----------
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('.sub-nav a');
+  if (!link) return;
+  // Re-trigger animation
+  link.style.animation = 'none';
+  requestAnimationFrame(() => {
+    link.style.animation = '';
+  });
+});
+
+
+/* ============================================
+   PAGE-HERO WAVE CANVAS ANIMATION
+   ============================================ */
+(function () {
+  // Wave colour sets per hero background type
+  const WAVE_THEMES = {
+    'section-white': [
+      { color: 'rgba(45,122,110,0.55)',  speed: 0.012, amp: 28, freq: 0.018, offset: 0     },
+      { color: 'rgba(45,122,110,0.35)',  speed: 0.018, amp: 20, freq: 0.025, offset: 2.1   },
+      { color: 'rgba(201,151,58,0.28)',  speed: 0.009, amp: 36, freq: 0.013, offset: 4.4   },
+      { color: 'rgba(45,122,110,0.18)',  speed: 0.022, amp: 14, freq: 0.032, offset: 1.0   },
+    ],
+    'section-mint': [
+      { color: 'rgba(45,122,110,0.60)',  speed: 0.013, amp: 30, freq: 0.016, offset: 0     },
+      { color: 'rgba(45,122,110,0.38)',  speed: 0.020, amp: 22, freq: 0.022, offset: 1.8   },
+      { color: 'rgba(201,151,58,0.30)',  speed: 0.010, amp: 40, freq: 0.012, offset: 3.6   },
+      { color: 'rgba(224,92,69,0.18)',   speed: 0.016, amp: 16, freq: 0.028, offset: 5.2   },
+    ],
+    'section-ink': [
+      { color: 'rgba(245,200,66,0.45)',  speed: 0.010, amp: 32, freq: 0.015, offset: 0     },
+      { color: 'rgba(245,200,66,0.28)',  speed: 0.017, amp: 24, freq: 0.021, offset: 2.6   },
+      { color: 'rgba(58,148,133,0.38)',  speed: 0.008, amp: 42, freq: 0.011, offset: 4.0   },
+      { color: 'rgba(245,200,66,0.18)',  speed: 0.023, amp: 15, freq: 0.030, offset: 0.8   },
+    ],
+  };
+
+  const DEFAULT_THEME = WAVE_THEMES['section-white'];
+
+  // Per-canvas animation state
+  const canvasStates = new WeakMap();
+
+  function getTheme(heroEl) {
+    for (const [cls, waves] of Object.entries(WAVE_THEMES)) {
+      if (heroEl.classList.contains(cls)) return waves;
+    }
+    return DEFAULT_THEME;
+  }
+
+  function drawWave(ctx, wave, t, width, height) {
+    ctx.beginPath();
+    ctx.moveTo(0, height);
+    for (let x = 0; x <= width; x += 3) {
+      // multi-harmonic: primary + 2nd harmonic for richness
+      const y = height * 0.52
+        + Math.sin(x * wave.freq + t * wave.speed + wave.offset) * wave.amp
+        + Math.sin(x * wave.freq * 2.1 + t * wave.speed * 1.6 + wave.offset + 1.2) * (wave.amp * 0.38)
+        + Math.sin(x * wave.freq * 0.45 + t * wave.speed * 0.7 + wave.offset + 2.8) * (wave.amp * 0.55);
+      ctx.lineTo(x, y);
+    }
+    ctx.lineTo(width, height);
+    ctx.closePath();
+    ctx.fillStyle = wave.color;
+    ctx.fill();
+  }
+
+  function tick(canvas) {
+    const state = canvasStates.get(canvas);
+    if (!state || !state.active) return;
+
+    const ctx = canvas.getContext('2d');
+    const { width, height } = canvas;
+    ctx.clearRect(0, 0, width, height);
+
+    state.t += 1;
+    state.waves.forEach(wave => drawWave(ctx, wave, state.t, width, height));
+
+    state.raf = requestAnimationFrame(() => tick(canvas));
+  }
+
+  function resizeCanvas(canvas) {
+    const hero = canvas.closest('.page-hero');
+    if (!hero) return;
+    const rect = hero.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width  = rect.width  * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width  = rect.width  + 'px';
+    canvas.style.height = rect.height + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+  }
+
+  function initCanvas(heroEl) {
+    // Don't double-init
+    if (heroEl.querySelector('.wave-canvas')) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.className = 'wave-canvas';
+    canvas.setAttribute('aria-hidden', 'true');
+    heroEl.insertBefore(canvas, heroEl.firstChild);
+
+    const state = {
+      t: Math.random() * 1000, // randomise phase per page
+      active: true,
+      waves: getTheme(heroEl),
+      raf: null,
+    };
+    canvasStates.set(canvas, state);
+
+    resizeCanvas(canvas);
+    tick(canvas);
+
+    return canvas;
+  }
+
+  function stopCanvas(canvas) {
+    const state = canvasStates.get(canvas);
+    if (!state) return;
+    state.active = false;
+    if (state.raf) cancelAnimationFrame(state.raf);
+  }
+
+  function startCanvas(canvas) {
+    const state = canvasStates.get(canvas);
+    if (!state) return;
+    if (state.active) return; // already running
+    state.active = true;
+    tick(canvas);
+  }
+
+  // Init canvases for all visible page-heroes on page switch
+  function refreshWaves() {
+    // Stop all first
+    document.querySelectorAll('.wave-canvas').forEach(stopCanvas);
+
+    // Start only the active page's heroes
+    const activePage = document.querySelector('.page.is-active');
+    if (!activePage) return;
+
+    activePage.querySelectorAll('.page-hero').forEach(hero => {
+      const existing = hero.querySelector('.wave-canvas');
+      if (existing) {
+        resizeCanvas(existing);
+        startCanvas(existing);
+      } else {
+        initCanvas(hero);
+      }
+    });
+  }
+
+  // Hook into hash navigation
+  window.addEventListener('hashchange', () => {
+    // Small delay so .is-active class is applied first
+    setTimeout(refreshWaves, 30);
+  });
+
+  // Resize handler
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      document.querySelectorAll('.page.is-active .wave-canvas').forEach(resizeCanvas);
+    }, 150);
+  }, { passive: true });
+
+  // Initial load
+  // Wait a tick for routeToCurrentHash() to set .is-active
+  setTimeout(refreshWaves, 80);
+})();
