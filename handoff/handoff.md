@@ -180,7 +180,7 @@ The API key is not committed to Git, but it is still visible to browsers in the 
 The public domain is:
 
 ```text
-https://musicangelshand.com/
+https://musicangelshands.com/
 ```
 
 SEO metadata is configured in `index.html`:
