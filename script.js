@@ -19,10 +19,10 @@ const contentConfig = {
   mission: { manifestKey: "mission", folder: "contents/mission", mode: "fullAsc" },
   board: { manifestKey: "board", folder: "contents/board", mode: "board" },
   history: { manifestKey: "history", folder: "contents/history", mode: "accordionDesc" },
+  musicQ: { manifestKey: "musicQ", folder: "contents/music_q", mode: "accordionDesc" },
+  monthlyQna: { manifestKey: "monthlyQna", folder: "contents/monthly_qna", mode: "accordionDesc" },
+  jobInterview: { manifestKey: "jobInterview", folder: "contents/job_interview", mode: "accordionDesc" },
   musicJourney: { manifestKey: "musicJourney", folder: "contents/music-journey", mode: "accordionDesc" },
-  musicAndBeyond: { manifestKey: "musicAndBeyond", folder: "contents/music-and-beyond", mode: "accordionDesc" },
-  musicBiz: { manifestKey: "musicBiz", folder: "contents/music-biz", mode: "accordionDesc" },
-  caringAngels: { manifestKey: "caringAngels", folder: "contents/caring-angels", mode: "accordionDesc" },
   eventUpcoming: { manifestKey: "event", folder: "contents/event", mode: "eventUpcoming" },
   eventPast: { manifestKey: "event", folder: "contents/event", mode: "eventPast" },
   newsLatest: { manifestKey: "news", folder: "contents/news", mode: "newsLatest" },
@@ -263,7 +263,7 @@ function formatDateTime(dateValue) {
 }
 
 function showNoContents(container) {
-  container.innerHTML = '<p class="empty-state">No Contents</p>';
+  container.innerHTML = "";
   container.dataset.loaded = "true";
 }
 
@@ -312,7 +312,7 @@ async function renderFullAsc(container, config) {
   }
 
   const items = await fetchMarkdownItems(config, files);
-  container.innerHTML = items.length ? items.map(renderMarkdownArticle).join("") : '<p class="empty-state">No Contents</p>';
+  container.innerHTML = items.length ? items.map(renderMarkdownArticle).join("") : "";
   container.dataset.loaded = "true";
 }
 
@@ -335,7 +335,7 @@ async function renderAccordionDesc(container, config) {
           `
         )
         .join("")
-    : '<p class="empty-state">No Contents</p>';
+    : "";
   container.dataset.loaded = "true";
 }
 
@@ -362,7 +362,7 @@ async function renderBoard(container, config) {
               `
             )
             .join("")
-        : '<p class="empty-state">No Contents</p>';
+        : "";
 
       return `
         <details ${index === 0 ? "open" : ""}>
@@ -437,7 +437,7 @@ function renderTitleButtons(container, items) {
           `
         )
         .join("")
-    : '<p class="empty-state">No Contents</p>';
+    : "";
 
   container.querySelectorAll("[data-dialog-index]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -481,7 +481,7 @@ async function renderNewsArchive(container, config) {
 
   const list = details.querySelector(".title-list");
   if (!files.length) {
-    list.innerHTML = '<p class="empty-state">No Contents</p>';
+    list.innerHTML = "";
     container.dataset.loaded = "true";
     return;
   }
@@ -653,7 +653,6 @@ async function renderGoogleGallery(container) {
   if (!getGoogleDriveApiKey()) {
     container.innerHTML = `
       <div class="gallery-config">
-        <p class="empty-state">No Contents</p>
         <button class="button button-primary" type="button" data-gallery-key-button>Load Gallery</button>
       </div>
     `;
@@ -687,7 +686,6 @@ async function renderGoogleGallery(container) {
           <details class="gallery-folder" data-gallery-folder-id="${escapeHtml(folder.id)}" data-gallery-folder-index="${index}">
             <summary>
               <span>${escapeHtml(folder.name)}</span>
-              <time datetime="${escapeHtml(folder.createdTime)}">${formatDateTime(folder.createdTime)}</time>
             </summary>
             <div class="gallery-grid" aria-live="polite"></div>
           </details>
@@ -723,7 +721,7 @@ async function renderGalleryFolder(details) {
   try {
     const files = (await listDriveFiles(folderId, { orderBy: "createdTime desc" })).filter(isGalleryMedia);
     if (!files.length) {
-      grid.innerHTML = '<p class="empty-state">No Contents</p>';
+      grid.innerHTML = "";
       details.dataset.loaded = "true";
       return;
     }
@@ -749,7 +747,7 @@ async function renderGalleryFolder(details) {
     });
     details.dataset.loaded = "true";
   } catch {
-    grid.innerHTML = '<p class="empty-state">No Contents</p>';
+    grid.innerHTML = "";
   } finally {
     delete details.dataset.loading;
   }

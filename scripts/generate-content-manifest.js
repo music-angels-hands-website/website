@@ -7,10 +7,10 @@ const contentsRoot = path.join(root, "contents");
 const folders = {
   mission: "mission",
   history: "history",
+  musicQ: "music_q",
+  monthlyQna: "monthly_qna",
+  jobInterview: "job_interview",
   musicJourney: "music-journey",
-  musicAndBeyond: "music-and-beyond",
-  musicBiz: "music-biz",
-  caringAngels: "caring-angels",
   event: "event",
   news: "news"
 };

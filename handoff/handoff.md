@@ -20,7 +20,7 @@ The original single-page layout was changed into a hash-routed structure:
 Top menu links route to the first submenu item for that section:
 
 - `ABOUT` -> `Mission/Vision`
-- `PROGRAMS` -> `Music Journey`
+- `PROGRAMS` -> `Music Q`
 - `EVENT` -> `Upcoming`
 - `GALLERY` -> `Current Year`
 - `NEWS` -> `Latest`
@@ -32,6 +32,9 @@ Examples:
 
 - `#mission-vision`
 - `#board`
+- `#music-q`
+- `#monthly-qna`
+- `#job-interview`
 - `#music-journey`
 - `#upcoming-events`
 - `#gallery`
@@ -80,26 +83,22 @@ Content folders:
 - Mission: `contents/mission`
 - Board: `contents/board/{year}`
 - History: `contents/history`
+- Music Q: `contents/music_q`
+- Monthly Q&A: `contents/monthly_qna`
+- Job Interview: `contents/job_interview`
 - Music Journey: `contents/music-journey`
-- Music & Beyond: `contents/music-and-beyond`
-- Music Biz: `contents/music-biz`
-- Caring Angels: `contents/caring-angels`
 - Event: `contents/event`
 - News: `contents/news`
 
 Markdown titles are read from the first `## Title` line. The renderer also accepts `# Title` as a fallback for existing drafts. If no heading exists, the file name is used as the title.
 
-Missing folders, missing files, and empty sections render as:
-
-```text
-No Contents
-```
+Missing folders, missing files, and empty sections render no visible placeholder.
 
 Current rendering rules:
 
 - Mission renders all files in ascending file-name order, showing title and body.
 - Board renders year folders in descending order. The newest year starts open, older years start closed. Files render as cards in ascending file-name order.
-- History, Music Journey, Music & Beyond, Music Biz, and Caring Angels render files in descending file-name order. The first item starts open, later items start closed.
+- History, Music Q, Monthly Q&A, Job Interview, and Music Journey render files in descending file-name order. The first item starts open, later items start closed.
 - Event splits date-named files into Upcoming and Past. Upcoming starts open, Past starts closed. Titles open content in a dialog.
 - News renders the latest 10 date-named files as a title list. Older files live under a closed Archive section. Titles open content in a dialog.
 
