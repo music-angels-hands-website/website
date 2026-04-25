@@ -67,14 +67,47 @@ This keeps short submenu pages from being visually cut off by the top menu.
 
 ## Dynamic/Lazy Content Placeholders
 
-Current mock data lives in `script.js`.
+Markdown content now loads through the root-level `content-manifest.json`.
+
+The browser cannot reliably list static folders by itself, so the manifest is the source of truth for content files. It intentionally lives outside `contents/` because `contents/` is expected to be deleted and replaced with fresh content. Regenerate the root manifest after replacing, adding, or removing Markdown files:
+
+```sh
+node scripts/generate-content-manifest.js
+```
+
+Content folders:
+
+- Mission: `contents/mission`
+- Board: `contents/board/{year}`
+- History: `contents/history`
+- Music Journey: `contents/music-journey`
+- Music & Beyond: `contents/music-and-beyond`
+- Music Biz: `contents/music-biz`
+- Caring Angels: `contents/caring-angels`
+- Event: `contents/event`
+- News: `contents/news`
+
+Markdown titles are read from the first `## Title` line. The renderer also accepts `# Title` as a fallback for existing drafts. If no heading exists, the file name is used as the title.
+
+Missing folders, missing files, and empty sections render as:
+
+```text
+No Contents
+```
+
+Current rendering rules:
+
+- Mission renders all files in ascending file-name order, showing title and body.
+- Board renders year folders in descending order. The newest year starts open, older years start closed. Files render as cards in ascending file-name order.
+- History, Music Journey, Music & Beyond, Music Biz, and Caring Angels render files in descending file-name order. The first item starts open, later items start closed.
+- Event splits date-named files into Upcoming and Past. Upcoming starts open, Past starts closed. Titles open content in a dialog.
+- News renders the latest 10 date-named files as a title list. Older files live under a closed Archive section. Titles open content in a dialog.
+
+Date files should use `YYYYMMDDxxx.md`. The renderer also supports older `MMDDYYYY.md` names while existing content is migrated.
 
 Event:
 
-- `events` array
-- `Upcoming` sorts ascending by date
-- `Past` sorts descending by date
-- Active/open event section renders when visited/opened
+- Event Markdown is fetched only when the matching open Event section is visited.
 
 Gallery:
 
@@ -84,9 +117,7 @@ Gallery:
 
 News:
 
-- `newsItems` array
-- `Latest` shows the newest item open
-- `Archive` shows the remaining items collapsed
+- Latest and Archive are loaded lazily from Markdown.
 
 ## Future Architecture Recommendation
 
@@ -120,4 +151,18 @@ The JavaScript syntax was checked with:
 node --check script.js
 ```
 
-It passed after the latest changes.
+The manifest generator syntax was checked with:
+
+```sh
+node --check scripts/generate-content-manifest.js
+```
+
+The static server was started with:
+
+```sh
+python3 -m http.server 4173
+```
+
+Then `index.html`, `content-manifest.json`, and a Markdown file were fetched through `http://localhost:4173/`.
+
+All checks passed after the latest changes.

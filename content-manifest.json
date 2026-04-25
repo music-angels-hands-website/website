@@ -1,0 +1,23 @@
+{
+  "mission": [
+    "01_Mission.md"
+  ],
+  "history": [
+    "202501.md",
+    "202604.md"
+  ],
+  "musicJourney": [],
+  "musicAndBeyond": [],
+  "musicBiz": [],
+  "caringAngels": [],
+  "event": [],
+  "news": [
+    "20260424.md"
+  ],
+  "board": {
+    "2026": [
+      "01_President.md",
+      "02_VicePresident.md"
+    ]
+  }
+}

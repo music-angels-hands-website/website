@@ -78,76 +78,19 @@
           <a href="#history">History</a>
         </nav>
         <section class="section-band page-section" id="mission-vision">
-          <div class="section-inner two-column">
-            <div>
-              <p class="eyebrow">Mission/Vision</p>
-              <h2>Young musicians serving with practical compassion.</h2>
-            </div>
-            <div class="stacked-copy">
-              <p>
-                Our mission is to help students use music, time, and teamwork to support children
-                and families who need encouragement, resources, and community.
-              </p>
-              <p>
-                Our vision is a student-led network where every member can grow as a volunteer,
-                communicator, organizer, and compassionate leader.
-              </p>
-            </div>
-          </div>
+          <div class="section-inner markdown-list" data-content-page="mission" aria-live="polite"></div>
         </section>
         <section class="section-white page-section" id="board">
           <div class="section-inner">
             <div class="section-heading">
               <p class="eyebrow">Board</p>
               <h2>Board members by year.</h2>
-              <p>Current placeholders are temporary and can be replaced when final names and bios are ready.</p>
             </div>
-            <div class="accordion-list" data-accordion-group>
-              <details open>
-                <summary>2026-2027 Board</summary>
-                <div class="people-grid">
-                  <article><h3>President</h3><p>Temporary Name - Leads meetings, coordinates priorities, and keeps the yearly service calendar moving.</p></article>
-                  <article><h3>Vice President</h3><p>Temporary Name - Supports project teams, member communication, and volunteer planning.</p></article>
-                  <article><h3>Program Director</h3><p>Temporary Name - Organizes music outreach, workshops, and partner activities.</p></article>
-                  <article><h3>Media Lead</h3><p>Temporary Name - Manages announcements, photos, recaps, and newsletter drafts.</p></article>
-                </div>
-              </details>
-              <details>
-                <summary>2025-2026 Board</summary>
-                <div class="people-grid">
-                  <article><h3>President</h3><p>Temporary Name - Previous board placeholder biography.</p></article>
-                  <article><h3>Events Lead</h3><p>Temporary Name - Previous board placeholder biography.</p></article>
-                </div>
-              </details>
-              <details>
-                <summary>2024-2025 Board</summary>
-                <div class="people-grid">
-                  <article><h3>President</h3><p>Temporary Name - Previous board placeholder biography.</p></article>
-                  <article><h3>Education Lead</h3><p>Temporary Name - Previous board placeholder biography.</p></article>
-                </div>
-              </details>
-              <details>
-                <summary>2023-2024 Board</summary>
-                <div class="people-grid">
-                  <article><h3>Founding Lead</h3><p>Temporary Name - Early leadership placeholder biography.</p></article>
-                  <article><h3>Service Lead</h3><p>Temporary Name - Early leadership placeholder biography.</p></article>
-                </div>
-              </details>
-            </div>
+            <div class="accordion-list" data-content-page="board" aria-live="polite"></div>
           </div>
         </section>
         <section class="section-mint page-section" id="history">
-          <div class="section-inner">
-            <div class="section-heading">
-              <p class="eyebrow">History</p>
-              <h2>A growing record of student-led service.</h2>
-            </div>
-            <div class="timeline">
-              <article><span>2021</span><p>Music Angels Hands begins with students gathering around music, service, and community care.</p></article>
-              <article><span>2023</span><p>Programs expand into volunteer drives, outreach performances, and member-led planning.</p></article>
-              <article><span>2026</span><p>The club prepares a structured archive for boards, programs, events, gallery, and news.</p></article>
-            </div>
-          </div>
+          <div class="section-inner accordion-list" data-content-page="history" aria-live="polite"></div>
         </section>
       </section>
 
@@ -166,16 +109,16 @@
           <a href="#caring-angels">Caring Angels</a>
         </nav>
         <section class="section-white page-section program-strip" id="music-journey">
-          <div class="section-inner program-layout"><div><p class="eyebrow">Music Journey</p><h2>Learning through practice and performance.</h2></div><p>Placeholder articles will highlight student practice stories, peer mentoring, small performances, and reflections on growth through music.</p></div>
+          <div class="section-inner accordion-list" data-content-page="musicJourney" aria-live="polite"></div>
         </section>
         <section class="section-band page-section program-strip" id="music-beyond">
-          <div class="section-inner program-layout"><div><p class="eyebrow">Music &amp; Beyond</p><h2>Creativity connected to service.</h2></div><p>This space can collect interdisciplinary projects, interviews, member essays, and creative service recaps.</p></div>
+          <div class="section-inner accordion-list" data-content-page="musicAndBeyond" aria-live="polite"></div>
         </section>
         <section class="section-white page-section program-strip" id="music-biz">
-          <div class="section-inner program-layout"><div><p class="eyebrow">Music Biz</p><h2>Behind the scenes of organizing impact.</h2></div><p>Future Markdown posts can cover planning, fundraising, communication, event production, and student leadership lessons.</p></div>
+          <div class="section-inner accordion-list" data-content-page="musicBiz" aria-live="polite"></div>
         </section>
         <section class="section-band page-section program-strip" id="caring-angels">
-          <div class="section-inner program-layout"><div><p class="eyebrow">Caring Angels</p><h2>Care projects for children and families.</h2></div><p>Donation drives, support campaigns, partner updates, and volunteer stories will live here as the program archive grows.</p></div>
+          <div class="section-inner accordion-list" data-content-page="caringAngels" aria-live="polite"></div>
         </section>
       </section>
 
@@ -184,7 +127,7 @@
           <div class="section-inner">
             <p class="eyebrow">Event</p>
             <h1 id="event-title">Upcoming and past events.</h1>
-            <p class="page-intro">Prepared for date-named Markdown files with lazy client-side loading.</p>
+            <p class="page-intro">Upcoming and past event posts are loaded from Markdown.</p>
           </div>
         </div>
         <nav class="sub-nav" aria-label="Event sections">
@@ -193,17 +136,17 @@
         </nav>
         <section class="section-band page-section" id="upcoming-events">
           <div class="section-inner accordion-list">
-            <details open data-lazy-list="events-upcoming">
+            <details open data-content-page="eventUpcoming">
               <summary>Upcoming</summary>
-              <div class="dynamic-list" aria-live="polite"></div>
+              <div class="title-list" aria-live="polite"></div>
             </details>
           </div>
         </section>
         <section class="section-band page-section" id="past-events">
           <div class="section-inner accordion-list">
-            <details data-lazy-list="events-past">
+            <details data-content-page="eventPast">
               <summary>Past</summary>
-              <div class="dynamic-list" aria-live="polite"></div>
+              <div class="title-list" aria-live="polite"></div>
             </details>
           </div>
         </section>
@@ -253,7 +196,7 @@
           <div class="section-inner">
             <p class="eyebrow">News</p>
             <h1 id="news-title">Latest updates and announcements.</h1>
-            <p class="page-intro">Prepared for Markdown news files; the latest item starts open.</p>
+            <p class="page-intro">News posts are loaded from Markdown when the section opens.</p>
           </div>
         </div>
         <nav class="sub-nav" aria-label="News sections">
@@ -261,10 +204,10 @@
           <a href="#news-archive">Archive</a>
         </nav>
         <section class="section-band page-section" id="latest-news">
-          <div class="section-inner accordion-list" data-news-list="latest" aria-live="polite"></div>
+          <div class="section-inner accordion-list" data-content-page="newsLatest" aria-live="polite"></div>
         </section>
         <section class="section-band page-section" id="news-archive">
-          <div class="section-inner accordion-list" data-news-list="archive" aria-live="polite"></div>
+          <div class="section-inner accordion-list" data-content-page="newsArchive" aria-live="polite"></div>
         </section>
       </section>
 
