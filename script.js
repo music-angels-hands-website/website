@@ -124,6 +124,10 @@ function routeToCurrentHash() {
   updateSubNavState(activeSubpageId);
   loadActiveSubpage(activeSubpageId);
   scrollToHashTarget(activeSubpageId);
+  // Trigger wave animation for the now-active page
+  if (typeof window._refreshWaves === 'function') {
+    window._refreshWaves();
+  }
 }
 
 function escapeHtml(value) {
@@ -1156,12 +1160,6 @@ document.addEventListener('click', (e) => {
     });
   }
 
-  // Hook into hash navigation
-  window.addEventListener('hashchange', () => {
-    // Small delay so .is-active class is applied first
-    setTimeout(refreshWaves, 30);
-  });
-
   // Resize handler
   let resizeTimer;
   window.addEventListener('resize', () => {
@@ -1171,7 +1169,6 @@ document.addEventListener('click', (e) => {
     }, 150);
   }, { passive: true });
 
-  // Initial load
-  // Wait a tick for routeToCurrentHash() to set .is-active
-  setTimeout(refreshWaves, 80);
+  // Expose so routeToCurrentHash can call it
+  window._refreshWaves = refreshWaves;
 })();
