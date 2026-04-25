@@ -1110,11 +1110,13 @@ document.addEventListener('click', (e) => {
     if (!state || !state.active) return;
 
     const ctx = canvas.getContext('2d');
-    const { width, height } = canvas;
-    ctx.clearRect(0, 0, width, height);
+    // Use logical (CSS px) dimensions — ctx is already scaled by dpr via setTransform
+    const w = canvas._logicalW || canvas.width;
+    const h = canvas._logicalH || canvas.height;
+    ctx.clearRect(0, 0, w, h);
 
     state.t += 1;
-    state.waves.forEach(wave => drawWave(ctx, wave, state.t, width, height));
+    state.waves.forEach(wave => drawWave(ctx, wave, state.t, w, h));
 
     state.raf = requestAnimationFrame(() => tick(canvas));
   }
@@ -1122,17 +1124,20 @@ document.addEventListener('click', (e) => {
   function resizeCanvas(canvas) {
     const hero = canvas.closest('.page-hero');
     if (!hero) return;
-    // offsetWidth/Height work even right after display:block,
-    // unlike getBoundingClientRect which can return 0 mid-transition
     const w = hero.offsetWidth  || hero.parentElement?.offsetWidth  || window.innerWidth;
     const h = hero.offsetHeight || hero.parentElement?.offsetHeight || 300;
     const dpr = window.devicePixelRatio || 1;
-    canvas.width  = w * dpr;
-    canvas.height = h * dpr;
+    // Setting .width resets the context transform, so scale is always applied fresh
+    canvas.width  = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
     canvas.style.width  = w + 'px';
     canvas.style.height = h + 'px';
+    // Store logical size so drawWave uses CSS px, not physical px
+    canvas._logicalW = w;
+    canvas._logicalH = h;
+    canvas._dpr = dpr;
     const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // always reset, never accumulate
   }
 
   function initCanvas(heroEl) {
