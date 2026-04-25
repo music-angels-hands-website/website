@@ -175,6 +175,30 @@ Repository setup required in GitHub:
 
 The API key is not committed to Git, but it is still visible to browsers in the deployed `config.local.js`. Restrict the key in Google Cloud Console to the Google Drive API and the deployed GitHub Pages domain or custom domain.
 
+## SEO
+
+The public domain is:
+
+```text
+https://musicangelshand.com/
+```
+
+SEO metadata is configured in `index.html`:
+
+- title and meta description
+- keywords for Fullerton volunteer organization searches
+- Open Graph metadata
+- Twitter card metadata
+- canonical URL
+- JSON-LD `Organization` structured data for Fullerton, California
+
+Search crawler files:
+
+- `robots.txt`
+- `sitemap.xml`
+
+Current positioning: Music Angels Hands is a Fullerton, California volunteer organization supporting community service through music performances, senior center volunteering, flea markets, and other local activities.
+
 ## Verification Done
 
 The JavaScript syntax was checked with:
