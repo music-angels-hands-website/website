@@ -175,6 +175,28 @@ Repository setup required in GitHub:
 
 The API key is not committed to Git, but it is still visible to browsers in the deployed `config.local.js`. Restrict the key in Google Cloud Console to the Google Drive API and the deployed GitHub Pages domain or custom domain.
 
+## Security Headers
+
+`index.html` includes a document-level Content Security Policy through a `Content-Security-Policy` meta tag.
+
+The current CSP allows only the static site itself plus the external services used by the site:
+
+- Google Fonts styles and font files
+- Unsplash hero image
+- Google Drive thumbnails and preview frames
+- Google Drive API requests
+- Google Apps Script signup endpoint
+
+The inline JSON-LD organization script is allowed by a SHA-256 hash. If that JSON-LD block changes, update the `script-src` hash in the CSP meta tag.
+
+GitHub Pages does not support custom per-site HTTP response headers. Because of that, `Strict-Transport-Security` cannot be set from this repository while the site is served directly by GitHub Pages. To clear an HSTS scanner finding, put the site behind a host or CDN that can send this response header:
+
+```text
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+```
+
+Only enable `includeSubDomains` and `preload` after confirming every subdomain is HTTPS-ready. Also keep GitHub Pages `Enforce HTTPS` enabled.
+
 ## SEO
 
 The public domain is:
