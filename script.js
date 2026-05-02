@@ -390,6 +390,24 @@ function closeSiblingAccordionSections(openDetails) {
   });
 }
 
+function getAccordionDetailsFromSummary(target) {
+  if (!(target instanceof Element)) {
+    return null;
+  }
+
+  const summary = target.closest("summary");
+  if (!summary) {
+    return null;
+  }
+
+  const details = summary?.parentElement;
+  if (!details || details.tagName.toLowerCase() !== "details") {
+    return null;
+  }
+
+  return details.closest(".accordion-list") ? details : null;
+}
+
 async function renderFullAsc(container, config) {
   const files = sortByNameAsc(await getManifestFiles(config));
   if (!files.length) {
@@ -923,6 +941,11 @@ navToggle.addEventListener("click", () => {
 });
 
 document.addEventListener("click", (event) => {
+  const accordionDetails = getAccordionDetailsFromSummary(event.target);
+  if (accordionDetails && !accordionDetails.open) {
+    closeSiblingAccordionSections(accordionDetails);
+  }
+
   const link = event.target.closest("a[href^='#']");
   if (!(link instanceof HTMLAnchorElement)) {
     return;
