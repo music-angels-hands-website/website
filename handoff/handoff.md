@@ -101,6 +101,7 @@ Current rendering rules:
 - History, Music Q, Monthly Q&A, Job Interview, and Music Journey render files in descending file-name order. The first item starts open, later items start closed.
 - Event splits date-named files into Upcoming and Past. Upcoming starts open, Past starts closed. Titles open content in a dialog.
 - News renders the latest 10 date-named files as a title list. Older files live under a closed Archive section. Titles open content in a dialog.
+- Accordion sections now behave as a single-open group within each `.accordion-list`: opening one direct `details` section closes its sibling `details` sections.
 
 Date files should use `YYYYMMDDxxx.md`. The renderer also supports older `MMDDYYYY.md` names while existing content is migrated.
 

@@ -377,6 +377,19 @@ function renderMarkdownArticle(item) {
   `;
 }
 
+function closeSiblingAccordionSections(openDetails) {
+  const accordion = openDetails.closest(".accordion-list");
+  if (!accordion) {
+    return;
+  }
+
+  Array.from(accordion.children).forEach((section) => {
+    if (section !== openDetails && section.tagName.toLowerCase() === "details") {
+      section.open = false;
+    }
+  });
+}
+
 async function renderFullAsc(container, config) {
   const files = sortByNameAsc(await getManifestFiles(config));
   if (!files.length) {
@@ -1091,6 +1104,7 @@ document.addEventListener('click', (e) => {
     const details = e.target.closest('details');
     if (!details) return;
     if (details.open) {
+      closeSiblingAccordionSections(details);
       details.classList.add('just-opened');
       setTimeout(() => details.classList.remove('just-opened'), 400);
     }
