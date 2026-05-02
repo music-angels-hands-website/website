@@ -1,3 +1,3 @@
-# Vice President
+## Vice President
 
 Joshua Lee
