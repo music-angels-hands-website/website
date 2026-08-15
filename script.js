@@ -972,6 +972,30 @@ document.querySelectorAll("details[data-content-page]").forEach((details) => {
 window.addEventListener("hashchange", routeToCurrentHash);
 window.addEventListener("resize", updateHeaderHeight);
 
+async function signupErrorMessage(response) {
+  let detail = "";
+
+  try {
+    const rawBody = await response.text();
+    if (rawBody) {
+      try {
+        const parsedBody = JSON.parse(rawBody);
+        detail = parsedBody.error || parsedBody.message || "";
+      } catch {
+        detail = rawBody
+          .replace(/<[^>]*>/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+    }
+  } catch {
+    // Keep the HTTP status when the response body is unavailable.
+  }
+
+  detail = String(detail).slice(0, 240);
+  return `Request failed (${response.status}${response.statusText ? ` ${response.statusText}` : ""})${detail ? `: ${detail}` : "."}`;
+}
+
 signupForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const formData = new FormData(signupForm);
@@ -993,13 +1017,14 @@ signupForm.addEventListener("submit", async (event) => {
     });
 
     if (!response.ok) {
-      throw new Error(`Signup request failed with status ${response.status}`);
+      throw new Error(await signupErrorMessage(response));
     }
 
     formNote.textContent = `Thank you${payload.name ? `, ${payload.name}` : ""}. We will contact you soon, so please watch for our reply email.`;
     signupForm.reset();
-  } catch {
-    formNote.textContent = "We could not send your message. Please try again.";
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    formNote.textContent = `We could not send your message. ${detail}`;
   } finally {
     submitButton.disabled = false;
   }
