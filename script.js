@@ -9,6 +9,9 @@ const formNote = document.querySelector(".form-note");
 const channelButton = document.querySelector(".channel-button");
 const channelDialog = document.querySelector(".channel-dialog");
 const channelDialogClose = document.querySelector(".channel-dialog__close");
+const instagramButton = document.querySelector(".social-button--instagram");
+const instagramDialog = document.querySelector("#instagram-dialog");
+const instagramDialogClose = instagramDialog?.querySelector(".channel-dialog__close");
 const signupEndpoint =
   "https://script.google.com/macros/s/AKfycbwpBaYQNH2pRSkebK2lcntwi_ADO_IRxhikcmdIzi5SY7QyErBPaFa8HeC2P74rxxxu/exec";
 
@@ -979,6 +982,11 @@ channelButton?.addEventListener("click", () => channelDialog?.showModal());
 channelDialogClose?.addEventListener("click", () => channelDialog?.close());
 channelDialog?.addEventListener("click", (event) => {
   if (event.target === channelDialog) channelDialog.close();
+});
+instagramButton?.addEventListener("click", () => instagramDialog?.showModal());
+instagramDialogClose?.addEventListener("click", () => instagramDialog?.close());
+instagramDialog?.addEventListener("click", (event) => {
+  if (event.target === instagramDialog) instagramDialog.close();
 });
 
 async function signupErrorMessage(response) {

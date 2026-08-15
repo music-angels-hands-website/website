@@ -297,12 +297,25 @@
       <span class="channel-button__label">KakaoTalk</span>
     </button>
 
+    <button class="social-button social-button--instagram" type="button" aria-label="Open Instagram QR code" aria-controls="instagram-dialog">
+      <span class="social-button__icon" aria-hidden="true">◎</span>
+      <span class="social-button__label">Instagram</span>
+    </button>
+
     <dialog class="channel-dialog" id="channel-dialog" aria-labelledby="channel-dialog-title">
       <button class="dialog-close channel-dialog__close" type="button" aria-label="Close KakaoTalk QR code">×</button>
       <p class="eyebrow">Connect with us</p>
       <h2 id="channel-dialog-title">Join our KakaoTalk channel</h2>
       <p>Scan the QR code with your phone to open the channel.</p>
       <img src="assets/kakao-channel-qr.png" alt="QR code for the Music Angels Hands KakaoTalk channel" />
+    </dialog>
+
+    <dialog class="channel-dialog" id="instagram-dialog" aria-labelledby="instagram-dialog-title">
+      <button class="dialog-close channel-dialog__close" type="button" aria-label="Close Instagram QR code">×</button>
+      <p class="eyebrow">Follow along</p>
+      <h2 id="instagram-dialog-title">Follow us on Instagram</h2>
+      <p>Scan the QR code with your phone to open Instagram.</p>
+      <img src="assets/instagram-qr.png" alt="QR code for the Music Angels Hands Instagram account" />
     </dialog>
 
     <script src="config.local.js"></script>
