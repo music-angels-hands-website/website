@@ -116,8 +116,10 @@ Gallery:
 - The Google Drive API key is not stored in the repository.
 - `script.js` reads `window.MUSIC_ANGELS_GOOGLE_API_KEY` if a runtime environment provides it.
 - If no runtime key is present, the page prompts for the key and keeps it in memory for the current browser session only.
-- Root folder subfolders are sorted by created date descending and rendered as collapsed sections.
-- Media inside a folder is loaded only when that folder section is opened.
+- Root gallery sections are sorted by creation date descending so the newest event appears first.
+- Child folders within a gallery section are sorted by name ascending and rendered as collapsed sections.
+- A root folder can contain one level of child folders. Those folders render as nested, collapsed gallery subsections and are loaded only when opened.
+- Media in both root folders and their child folders is sorted as video first, image second, then name ascending.
 - Images and videos render as preview cards. Clicking a card opens a large dialog with previous/next navigation. Videos use the Google Drive preview player.
 
 News:

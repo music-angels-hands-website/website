@@ -12,6 +12,9 @@ const channelDialogClose = document.querySelector(".channel-dialog__close");
 const instagramButton = document.querySelector(".social-button--instagram");
 const instagramDialog = document.querySelector("#instagram-dialog");
 const instagramDialogClose = instagramDialog?.querySelector(".channel-dialog__close");
+const websiteButton = document.querySelector(".social-button--website");
+const websiteDialog = document.querySelector("#website-dialog");
+const websiteDialogClose = websiteDialog?.querySelector(".channel-dialog__close");
 const signupEndpoint =
   "https://script.google.com/macros/s/AKfycbwpBaYQNH2pRSkebK2lcntwi_ADO_IRxhikcmdIzi5SY7QyErBPaFa8HeC2P74rxxxu/exec";
 
@@ -385,7 +388,7 @@ function renderMarkdownArticle(item) {
 
 function closeSiblingAccordionSections(openDetails) {
   const accordion = openDetails.closest(".accordion-list");
-  if (!accordion) {
+  if (!accordion || openDetails.parentElement !== accordion) {
     return;
   }
 
@@ -411,7 +414,8 @@ function getAccordionDetailsFromSummary(target) {
     return null;
   }
 
-  return details.closest(".accordion-list") ? details : null;
+  const accordion = details.closest(".accordion-list");
+  return accordion && details.parentElement === accordion ? details : null;
 }
 
 async function renderFullAsc(container, config) {
@@ -708,7 +712,7 @@ async function listDriveFiles(folderId, options = {}) {
   do {
     const url = buildDriveApiUrl({
       q: q.join(" and "),
-      orderBy: options.orderBy || "createdTime desc",
+      orderBy: options.orderBy || "name",
       pageSize: "100",
       pageToken,
       fields:
@@ -733,6 +737,51 @@ async function listDriveFiles(folderId, options = {}) {
 
 function isGalleryMedia(file) {
   return file.mimeType?.startsWith("image/") || file.mimeType?.startsWith("video/");
+}
+
+function isGalleryFolder(file) {
+  return file.mimeType === "application/vnd.google-apps.folder";
+}
+
+const galleryNameCollator = new Intl.Collator(["ko", "en"], {
+  numeric: true,
+  sensitivity: "base"
+});
+
+function compareGalleryNames(left, right) {
+  return galleryNameCollator.compare(left.name || "", right.name || "") || String(left.id).localeCompare(String(right.id));
+}
+
+function compareGalleryMedia(left, right) {
+  const typeOrder = (file) => (file.mimeType?.startsWith("video/") ? 0 : 1);
+  return typeOrder(left) - typeOrder(right) || compareGalleryNames(left, right);
+}
+
+function compareGalleryCreatedDesc(left, right) {
+  return new Date(right.createdTime || 0) - new Date(left.createdTime || 0) || compareGalleryNames(left, right);
+}
+
+function renderGalleryCards(grid, files) {
+  grid.hidden = files.length === 0;
+  grid.innerHTML = files
+    .map(
+      (file, index) => `
+        <button class="gallery-card" type="button" data-gallery-media-index="${index}">
+          <img src="${escapeHtml(mediaPreviewUrl(file))}" alt="" loading="lazy" />
+          <span class="gallery-card-meta">
+            <strong>${escapeHtml(file.name)}</strong>
+            <small>${mediaKind(file)}</small>
+          </span>
+        </button>
+      `
+    )
+    .join("");
+
+  grid.querySelectorAll("[data-gallery-media-index]").forEach((button) => {
+    button.addEventListener("click", () => {
+      openGalleryDialog(files, Number(button.dataset.galleryMediaIndex));
+    });
+  });
 }
 
 function mediaPreviewUrl(file) {
@@ -791,13 +840,17 @@ async function renderGoogleGallery(container) {
     }
 
     container.innerHTML = folders
+      .sort(compareGalleryCreatedDesc)
       .map(
-        (folder, index) => `
-          <details class="gallery-folder" data-gallery-folder-id="${escapeHtml(folder.id)}" data-gallery-folder-index="${index}">
+        (folder) => `
+          <details class="gallery-folder" data-gallery-folder-id="${escapeHtml(folder.id)}">
             <summary>
               <span>${escapeHtml(folder.name)}</span>
             </summary>
-            <div class="gallery-grid" aria-live="polite"></div>
+            <div class="gallery-folder-content" aria-live="polite">
+              <div class="gallery-grid" data-gallery-media-grid></div>
+              <div class="gallery-subfolders" data-gallery-subfolders></div>
+            </div>
           </details>
         `
       )
@@ -824,37 +877,58 @@ async function renderGalleryFolder(details) {
   }
 
   const folderId = details.dataset.galleryFolderId;
-  const grid = details.querySelector(".gallery-grid");
+  const grid = details.querySelector("[data-gallery-media-grid]");
+  const subfoldersContainer = details.querySelector("[data-gallery-subfolders]");
   details.dataset.loading = "true";
   grid.innerHTML = '<p class="empty-state">Loading...</p>';
 
   try {
-    const files = (await listDriveFiles(folderId, { orderBy: "createdTime desc" })).filter(isGalleryMedia);
-    if (!files.length) {
-      grid.innerHTML = "";
-      details.dataset.loaded = "true";
-      return;
-    }
+    const entries = await listDriveFiles(folderId);
+    const files = entries.filter(isGalleryMedia).sort(compareGalleryMedia);
+    const subfolders = entries.filter(isGalleryFolder).sort(compareGalleryNames);
 
-    grid.innerHTML = files
+    renderGalleryCards(grid, files);
+    subfoldersContainer.innerHTML = subfolders
       .map(
-        (file, index) => `
-          <button class="gallery-card" type="button" data-gallery-media-index="${index}">
-            <img src="${escapeHtml(mediaPreviewUrl(file))}" alt="" loading="lazy" />
-            <span class="gallery-card-meta">
-              <strong>${escapeHtml(file.name)}</strong>
-              <small>${mediaKind(file)}</small>
-            </span>
-          </button>
+        (folder) => `
+          <details class="gallery-subfolder" data-gallery-subfolder-id="${escapeHtml(folder.id)}">
+            <summary>
+              <span class="gallery-subfolder-title"><span aria-hidden="true">📁</span>${escapeHtml(folder.name)}</span>
+            </summary>
+            <div class="gallery-grid" data-gallery-media-grid aria-live="polite"></div>
+          </details>
         `
       )
       .join("");
 
-    grid.querySelectorAll("[data-gallery-media-index]").forEach((button) => {
-      button.addEventListener("click", () => {
-        openGalleryDialog(files, Number(button.dataset.galleryMediaIndex));
+    subfoldersContainer.querySelectorAll(".gallery-subfolder").forEach((subfolder) => {
+      subfolder.addEventListener("toggle", () => {
+        if (subfolder.open) {
+          renderGallerySubfolder(subfolder);
+        }
       });
     });
+    details.dataset.loaded = "true";
+  } catch {
+    grid.innerHTML = "";
+  } finally {
+    delete details.dataset.loading;
+  }
+}
+
+async function renderGallerySubfolder(details) {
+  if (details.dataset.loaded === "true" || details.dataset.loading === "true") {
+    return;
+  }
+
+  const folderId = details.dataset.gallerySubfolderId;
+  const grid = details.querySelector("[data-gallery-media-grid]");
+  details.dataset.loading = "true";
+  grid.innerHTML = '<p class="empty-state">Loading...</p>';
+
+  try {
+    const files = (await listDriveFiles(folderId)).filter(isGalleryMedia).sort(compareGalleryMedia);
+    renderGalleryCards(grid, files);
     details.dataset.loaded = "true";
   } catch {
     grid.innerHTML = "";
@@ -988,6 +1062,11 @@ instagramDialogClose?.addEventListener("click", () => instagramDialog?.close());
 instagramDialog?.addEventListener("click", (event) => {
   if (event.target === instagramDialog) instagramDialog.close();
 });
+websiteButton?.addEventListener("click", () => websiteDialog?.showModal());
+websiteDialogClose?.addEventListener("click", () => websiteDialog?.close());
+websiteDialog?.addEventListener("click", (event) => {
+  if (event.target === websiteDialog) websiteDialog.close();
+});
 
 async function signupErrorMessage(response) {
   let detail = "";
@@ -1013,7 +1092,7 @@ async function signupErrorMessage(response) {
   return `Request failed (${response.status}${response.statusText ? ` ${response.statusText}` : ""})${detail ? `: ${detail}` : "."}`;
 }
 
-signupForm.addEventListener("submit", async (event) => {
+signupForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const formData = new FormData(signupForm);
   const submitButton = signupForm.querySelector('button[type="submit"]');

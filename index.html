@@ -65,7 +65,7 @@
       }
     </script>
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="styles.css?v=20260815-hero-video" />
+    <link rel="stylesheet" href="styles.css?v=20260815-qr-fix-2" />
   </head>
   <body>
     <header class="site-header">
@@ -270,18 +270,17 @@
               <h2>Start with your interest and availability.</h2>
               <p>New members can join meetings, help with project planning, perform at events, or support media and outreach work.</p>
             </div>
-            <form class="signup-form" aria-label="Subscribe for Music Angels Hands updates">
-              <label for="name">Name</label>
-              <input id="name" name="name" type="text" autocomplete="name" placeholder="Your name" />
-              <label for="email">Email</label>
-              <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" />
-              <label for="phone">Phone</label>
-              <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="Your phone number" />
-              <label for="message">Message</label>
-              <textarea id="message" name="message" rows="4" placeholder="Tell us how you would like to get involved"></textarea>
-              <button class="button button-primary" type="submit">Sign Up</button>
-              <p class="form-note" role="status" aria-live="polite"></p>
-            </form>
+            <div class="join-contact" aria-label="Contact Music Angels Hands">
+              <p class="join-contact__intro">Interested in joining or volunteering? Please contact us directly.</p>
+              <a href="mailto:ahrams@gmail.com" class="join-contact__link">
+                <span class="join-contact__label">Email</span>
+                <span>ahrams@gmail.com</span>
+              </a>
+              <a href="tel:+17147323225" class="join-contact__link">
+                <span class="join-contact__label">Phone</span>
+                <span>(714) 732-3225</span>
+              </a>
+            </div>
           </div>
         </section>
       </section>
@@ -302,12 +301,17 @@
       <span class="social-button__label">Instagram</span>
     </button>
 
+    <button class="social-button social-button--website" type="button" aria-label="Open website QR code" aria-controls="website-dialog">
+      <span class="social-button__icon" aria-hidden="true">↗</span>
+      <span class="social-button__label">Website</span>
+    </button>
+
     <dialog class="channel-dialog" id="channel-dialog" aria-labelledby="channel-dialog-title">
       <button class="dialog-close channel-dialog__close" type="button" aria-label="Close KakaoTalk QR code">×</button>
       <p class="eyebrow">Connect with us</p>
       <h2 id="channel-dialog-title">Join our KakaoTalk channel</h2>
       <p>Scan the QR code with your phone to open the channel.</p>
-      <img src="assets/kakao-channel-qr.png" alt="QR code for the Music Angels Hands KakaoTalk channel" />
+      <img class="qr-image" src="assets/kakao-channel-qr.png" alt="QR code for the Music Angels Hands KakaoTalk channel" />
     </dialog>
 
     <dialog class="channel-dialog" id="instagram-dialog" aria-labelledby="instagram-dialog-title">
@@ -315,7 +319,16 @@
       <p class="eyebrow">Follow along</p>
       <h2 id="instagram-dialog-title">Follow us on Instagram</h2>
       <p>Scan the QR code with your phone to open Instagram.</p>
-      <img src="assets/instagram-qr.png" alt="QR code for the Music Angels Hands Instagram account" />
+      <img class="qr-image" src="assets/instagram-qr.png" alt="QR code for the Music Angels Hands Instagram account" />
+    </dialog>
+
+    <dialog class="channel-dialog" id="website-dialog" aria-labelledby="website-dialog-title">
+      <button class="dialog-close channel-dialog__close" type="button" aria-label="Close website QR code">×</button>
+      <p class="eyebrow">Share our site</p>
+      <h2 id="website-dialog-title">Open our website</h2>
+      <p>Scan the QR code with your phone to visit Music Angels Hands online.</p>
+      <img class="qr-image" src="assets/website-qr.png" alt="QR code for the Music Angels Hands website" />
+      <a class="qr-direct-link" href="https://musicangelshands.com/" target="_blank" rel="noopener">Open website in a new tab</a>
     </dialog>
 
     <script src="config.local.js"></script>
