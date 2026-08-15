@@ -1020,10 +1020,26 @@ signupForm.addEventListener("submit", async (event) => {
       throw new Error(await signupErrorMessage(response));
     }
 
+    const responseBody = await response.text();
+    if (responseBody) {
+      let result = null;
+      try {
+        result = JSON.parse(responseBody);
+      } catch {
+        // A non-JSON success response does not need special handling.
+      }
+      if (result?.ok === false) {
+        throw new Error(result.error || "The signup service rejected the request.");
+      }
+    }
+
     formNote.textContent = `Thank you${payload.name ? `, ${payload.name}` : ""}. We will contact you soon, so please watch for our reply email.`;
     signupForm.reset();
   } catch (error) {
-    const detail = error instanceof Error ? error.message : String(error);
+    const rawDetail = error instanceof Error ? error.message : String(error);
+    const detail = /load failed|failed to fetch/i.test(rawDetail)
+      ? "Network/CORS error. Please check the Apps Script deployment access and MailApp authorization."
+      : rawDetail;
     formNote.textContent = `We could not send your message. ${detail}`;
   } finally {
     submitButton.disabled = false;
