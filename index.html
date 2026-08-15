@@ -292,6 +292,19 @@
       <a href="#home">Back to top</a>
     </footer>
 
+    <button class="channel-button" type="button" aria-label="Open KakaoTalk channel QR code" aria-controls="channel-dialog">
+      <span class="channel-button__icon" aria-hidden="true">K</span>
+      <span class="channel-button__label">KakaoTalk</span>
+    </button>
+
+    <dialog class="channel-dialog" id="channel-dialog" aria-labelledby="channel-dialog-title">
+      <button class="dialog-close channel-dialog__close" type="button" aria-label="Close KakaoTalk QR code">×</button>
+      <p class="eyebrow">Connect with us</p>
+      <h2 id="channel-dialog-title">Join our KakaoTalk channel</h2>
+      <p>Scan the QR code with your phone to open the channel.</p>
+      <img src="assets/kakao-channel-qr.png" alt="QR code for the Music Angels Hands KakaoTalk channel" />
+    </dialog>
+
     <script src="config.local.js"></script>
     <script src="script.js?v=20260815-signup-errors"></script>
   </body>

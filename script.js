@@ -6,6 +6,9 @@ const mainLinks = Array.from(document.querySelectorAll("[data-page-link]"));
 const pageSections = Array.from(document.querySelectorAll(".page-section[id]"));
 const signupForm = document.querySelector(".signup-form");
 const formNote = document.querySelector(".form-note");
+const channelButton = document.querySelector(".channel-button");
+const channelDialog = document.querySelector(".channel-dialog");
+const channelDialogClose = document.querySelector(".channel-dialog__close");
 const signupEndpoint =
   "https://script.google.com/macros/s/AKfycbwpBaYQNH2pRSkebK2lcntwi_ADO_IRxhikcmdIzi5SY7QyErBPaFa8HeC2P74rxxxu/exec";
 
@@ -971,6 +974,12 @@ document.querySelectorAll("details[data-content-page]").forEach((details) => {
 
 window.addEventListener("hashchange", routeToCurrentHash);
 window.addEventListener("resize", updateHeaderHeight);
+
+channelButton?.addEventListener("click", () => channelDialog?.showModal());
+channelDialogClose?.addEventListener("click", () => channelDialog?.close());
+channelDialog?.addEventListener("click", (event) => {
+  if (event.target === channelDialog) channelDialog.close();
+});
 
 async function signupErrorMessage(response) {
   let detail = "";
