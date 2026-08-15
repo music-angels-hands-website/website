@@ -987,10 +987,14 @@ signupForm.addEventListener("submit", async (event) => {
   formNote.textContent = "Sending...";
 
   try {
-    await fetch(signupEndpoint, {
+    const response = await fetch(signupEndpoint, {
       method: "POST",
       body: JSON.stringify(payload)
     });
+
+    if (!response.ok) {
+      throw new Error(`Signup request failed with status ${response.status}`);
+    }
 
     formNote.textContent = `Thank you${payload.name ? `, ${payload.name}` : ""}. We will contact you soon, so please watch for our reply email.`;
     signupForm.reset();
