@@ -120,7 +120,14 @@ Gallery:
 - Child folders within a gallery section are sorted by name ascending and rendered as collapsed sections.
 - A root folder can contain one level of child folders. Those folders render as nested, collapsed gallery subsections and are loaded only when opened.
 - Media in both root folders and their child folders is sorted as video first, image second, then name ascending.
-- Images and videos render as preview cards. Clicking a card opens a large dialog with previous/next navigation. Videos use the Google Drive preview player.
+- The gallery script uses a versioned URL in `index.html`; update the relevant script or stylesheet version whenever behavior or styling changes so browsers load the latest assets.
+- Images and videos render as preview cards without visible file names. Clicking a card opens a large dialog with previous/next navigation. Videos use the Google Drive preview player.
+
+Floating contact buttons:
+
+- KakaoTalk, Instagram, and Website use the same desktop width. On small screens, they collapse to equal-sized icon buttons.
+- The buttons use `data-dialog-id` and a shared click handler to open their matching dialog. This avoids separate event bindings drifting out of sync.
+- Each popup contains a QR code and a matching direct link that opens in a new tab. The KakaoTalk link points to `open.kakao.com/o/sUVshZui`, and the Instagram link points to `instagram.com/claviermusiclesson`.
 
 News:
 

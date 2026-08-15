@@ -65,7 +65,7 @@
       }
     </script>
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="styles.css?v=20260815-qr-fix-2" />
+    <link rel="stylesheet" href="styles.css?v=20260815-floating-actions" />
   </head>
   <body>
     <header class="site-header">
@@ -291,17 +291,17 @@
       <a href="#home">Back to top</a>
     </footer>
 
-    <button class="channel-button" type="button" aria-label="Open KakaoTalk channel QR code" aria-controls="channel-dialog">
+    <button class="channel-button" type="button" aria-label="Open KakaoTalk channel QR code" aria-controls="channel-dialog" data-dialog-id="channel-dialog">
       <span class="channel-button__icon" aria-hidden="true">K</span>
       <span class="channel-button__label">KakaoTalk</span>
     </button>
 
-    <button class="social-button social-button--instagram" type="button" aria-label="Open Instagram QR code" aria-controls="instagram-dialog">
+    <button class="social-button social-button--instagram" type="button" aria-label="Open Instagram QR code" aria-controls="instagram-dialog" data-dialog-id="instagram-dialog">
       <span class="social-button__icon" aria-hidden="true">◎</span>
       <span class="social-button__label">Instagram</span>
     </button>
 
-    <button class="social-button social-button--website" type="button" aria-label="Open website QR code" aria-controls="website-dialog">
+    <button class="social-button social-button--website" type="button" aria-label="Open website QR code" aria-controls="website-dialog" data-dialog-id="website-dialog">
       <span class="social-button__icon" aria-hidden="true">↗</span>
       <span class="social-button__label">Website</span>
     </button>
@@ -311,7 +311,8 @@
       <p class="eyebrow">Connect with us</p>
       <h2 id="channel-dialog-title">Join our KakaoTalk channel</h2>
       <p>Scan the QR code with your phone to open the channel.</p>
-      <img class="qr-image" src="assets/kakao-channel-qr.png" alt="QR code for the Music Angels Hands KakaoTalk channel" />
+      <img class="qr-image" src="assets/website-qr.png" alt="QR code for the Music Angels Hands KakaoTalk channel" />
+      <a class="qr-direct-link" href="https://open.kakao.com/o/sUVshZui" target="_blank" rel="noopener noreferrer">Open KakaoTalk channel in a new tab</a>
     </dialog>
 
     <dialog class="channel-dialog" id="instagram-dialog" aria-labelledby="instagram-dialog-title">
@@ -319,7 +320,8 @@
       <p class="eyebrow">Follow along</p>
       <h2 id="instagram-dialog-title">Follow us on Instagram</h2>
       <p>Scan the QR code with your phone to open Instagram.</p>
-      <img class="qr-image" src="assets/instagram-qr.png" alt="QR code for the Music Angels Hands Instagram account" />
+      <img class="qr-image" src="assets/kakao-channel-qr.png" alt="QR code for the Music Angels Hands Instagram account" />
+      <a class="qr-direct-link" href="https://www.instagram.com/claviermusiclesson?utm_source=qr" target="_blank" rel="noopener noreferrer">Open Instagram in a new tab</a>
     </dialog>
 
     <dialog class="channel-dialog" id="website-dialog" aria-labelledby="website-dialog-title">
@@ -327,11 +329,11 @@
       <p class="eyebrow">Share our site</p>
       <h2 id="website-dialog-title">Open our website</h2>
       <p>Scan the QR code with your phone to visit Music Angels Hands online.</p>
-      <img class="qr-image" src="assets/website-qr.png" alt="QR code for the Music Angels Hands website" />
-      <a class="qr-direct-link" href="https://musicangelshands.com/" target="_blank" rel="noopener">Open website in a new tab</a>
+      <img class="qr-image" src="assets/instagram-qr.png" alt="QR code for the Music Angels Hands website" />
+      <a class="qr-direct-link" href="https://musicangelshands.com/" target="_blank" rel="noopener noreferrer">Open website in a new tab</a>
     </dialog>
 
     <script src="config.local.js"></script>
-    <script src="script.js?v=20260815-signup-errors"></script>
+    <script src="script.js?v=20260815-gallery-labels"></script>
   </body>
 </html>

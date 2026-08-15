@@ -6,15 +6,6 @@ const mainLinks = Array.from(document.querySelectorAll("[data-page-link]"));
 const pageSections = Array.from(document.querySelectorAll(".page-section[id]"));
 const signupForm = document.querySelector(".signup-form");
 const formNote = document.querySelector(".form-note");
-const channelButton = document.querySelector(".channel-button");
-const channelDialog = document.querySelector(".channel-dialog");
-const channelDialogClose = document.querySelector(".channel-dialog__close");
-const instagramButton = document.querySelector(".social-button--instagram");
-const instagramDialog = document.querySelector("#instagram-dialog");
-const instagramDialogClose = instagramDialog?.querySelector(".channel-dialog__close");
-const websiteButton = document.querySelector(".social-button--website");
-const websiteDialog = document.querySelector("#website-dialog");
-const websiteDialogClose = websiteDialog?.querySelector(".channel-dialog__close");
 const signupEndpoint =
   "https://script.google.com/macros/s/AKfycbwpBaYQNH2pRSkebK2lcntwi_ADO_IRxhikcmdIzi5SY7QyErBPaFa8HeC2P74rxxxu/exec";
 
@@ -766,10 +757,9 @@ function renderGalleryCards(grid, files) {
   grid.innerHTML = files
     .map(
       (file, index) => `
-        <button class="gallery-card" type="button" data-gallery-media-index="${index}">
+        <button class="gallery-card" type="button" data-gallery-media-index="${index}" aria-label="Open ${escapeHtml(file.name)} (${mediaKind(file)})">
           <img src="${escapeHtml(mediaPreviewUrl(file))}" alt="" loading="lazy" />
           <span class="gallery-card-meta">
-            <strong>${escapeHtml(file.name)}</strong>
             <small>${mediaKind(file)}</small>
           </span>
         </button>
@@ -1052,20 +1042,31 @@ document.querySelectorAll("details[data-content-page]").forEach((details) => {
 window.addEventListener("hashchange", routeToCurrentHash);
 window.addEventListener("resize", updateHeaderHeight);
 
-channelButton?.addEventListener("click", () => channelDialog?.showModal());
-channelDialogClose?.addEventListener("click", () => channelDialog?.close());
-channelDialog?.addEventListener("click", (event) => {
-  if (event.target === channelDialog) channelDialog.close();
+function openContactDialog(dialogId) {
+  const dialog = document.getElementById(dialogId);
+  if (!(dialog instanceof HTMLDialogElement) || dialog.open) {
+    return;
+  }
+
+  if (typeof dialog.showModal === "function") {
+    dialog.showModal();
+  } else {
+    dialog.setAttribute("open", "");
+  }
+}
+
+document.addEventListener("click", (event) => {
+  const trigger = event.target instanceof Element ? event.target.closest("[data-dialog-id]") : null;
+  if (trigger instanceof HTMLButtonElement) {
+    openContactDialog(trigger.dataset.dialogId);
+  }
 });
-instagramButton?.addEventListener("click", () => instagramDialog?.showModal());
-instagramDialogClose?.addEventListener("click", () => instagramDialog?.close());
-instagramDialog?.addEventListener("click", (event) => {
-  if (event.target === instagramDialog) instagramDialog.close();
-});
-websiteButton?.addEventListener("click", () => websiteDialog?.showModal());
-websiteDialogClose?.addEventListener("click", () => websiteDialog?.close());
-websiteDialog?.addEventListener("click", (event) => {
-  if (event.target === websiteDialog) websiteDialog.close();
+
+document.querySelectorAll(".channel-dialog").forEach((dialog) => {
+  dialog.querySelector(".channel-dialog__close")?.addEventListener("click", () => dialog.close());
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
 });
 
 async function signupErrorMessage(response) {
