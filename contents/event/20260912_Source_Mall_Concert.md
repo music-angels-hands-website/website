@@ -1,1 +1,1 @@
-<video controls src="../assets/81a44d0f-054a-4d8f-95a6-c368a6c35fc9.mp4"></video>
+![](../assets/2f2ecb96-aaa3-4e06-a108-7753f9ce70aa.png) <!-- cms:image-size=100 -->
