@@ -4,6 +4,7 @@ const siteNav = document.querySelector(".site-nav");
 const pages = Array.from(document.querySelectorAll("[data-page]"));
 const mainLinks = Array.from(document.querySelectorAll("[data-page-link]"));
 const pageSections = Array.from(document.querySelectorAll(".page-section[id]"));
+const floatingActionButtons = Array.from(document.querySelectorAll(".channel-button, .social-button"));
 const signupForm = document.querySelector(".signup-form");
 const formNote = document.querySelector(".form-note");
 const signupEndpoint =
@@ -55,6 +56,10 @@ function setActivePage(pageId) {
 
   mainLinks.forEach((link) => {
     link.classList.toggle("is-active", link.dataset.pageLink === pageId);
+  });
+
+  floatingActionButtons.forEach((button) => {
+    button.hidden = pageId !== "home";
   });
 }
 
