@@ -26,12 +26,22 @@ Top menu links route to the first submenu item for that section:
 - `NEWS` -> `Latest`
 - `JOIN/VOLUNTEER` -> `How to join`
 
+The About submenu also includes an `Annual Giving` page. It introduces the two
+organizations Music Angels Hands supports with donations each year:
+
+- Ronald McDonald House
+- CHOC Children’s
+
+Their supplied logo files are stored as `assets/ronald-mcdonald-house-logo.webp`
+and `assets/choc-childrens-logo.webp`.
+
 Routing is implemented with URL hashes in `script.js`.
 
 Examples:
 
 - `#mission-vision`
 - `#board`
+- `#annual-giving`
 - `#music-q`
 - `#monthly-qna`
 - `#job-interview`
