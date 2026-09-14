@@ -156,6 +156,7 @@ function titleFromFileName(fileName) {
 
 const imageLinePattern =
   /^!\[([^\]]*)\]\(([^)]+)\)(?:\s*<!--\s*cms:image-size=(25|33|50|100)\s*-->)?$/;
+const videoLinePattern = /^<video\s+controls\s+src="([^"]+)"\s*><\/video>$/;
 
 function assetUrlFromMarkdownPath(markdownPath, imagePath) {
   if (/^(https?:|data:|\/)/.test(imagePath)) {
@@ -184,6 +185,16 @@ function renderImageGrid(images) {
         )
         .join("")}
     </div>
+  `;
+}
+
+function renderVideo(video) {
+  return `
+    <figure class="content-video">
+      <video controls preload="metadata" src="${escapeHtml(video.src)}">
+        Your browser does not support HTML5 video.
+      </video>
+    </figure>
   `;
 }
 
@@ -240,6 +251,15 @@ function parseMarkdown(markdown, fallbackTitle = "Untitled", markdownPath = "") 
         src: assetUrlFromMarkdownPath(markdownPath, imageMatch[2]),
         size: imageMatch[3] || "33"
       });
+      return;
+    }
+
+    const videoMatch = trimmed.match(videoLinePattern);
+    if (videoMatch) {
+      flushParagraph();
+      flushList();
+      flushImages();
+      blocks.push(renderVideo({ src: assetUrlFromMarkdownPath(markdownPath, videoMatch[1]) }));
       return;
     }
 

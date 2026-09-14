@@ -482,6 +482,19 @@ details > .markdown-body { padding: 22px 24px; }
   object-fit: contain;
 }
 
+.content-video {
+  width: min(100%, 720px);
+  margin: 4px 0;
+}
+
+.content-video video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  background: #111;
+}
+
 /* EMPTY STATE */
 .empty-state { margin: 0; padding: 24px; color: var(--muted-light); font-weight: 500; font-style: italic; }
 .people-grid > .empty-state { grid-column: 1 / -1; }
