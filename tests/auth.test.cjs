@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const vm = require('node:vm');
 const fs = require('node:fs');
 const source = fs.readFileSync(require('node:path').join(__dirname, '../auth.js'), 'utf8');
-function setup(configured = true) {
+function setup(configured = true, sdkAvailable = true) {
   const elements = new Map();
   function element(id) {
     if (!elements.has(id)) elements.set(id, { value: '', dataset: {}, handlers: {}, hidden: false,
@@ -26,7 +26,7 @@ function setup(configured = true) {
   }]));
   auth.onAuthStateChange = fn => { callback = fn; };
   auth.getSession = async () => ({ data: { session: null }, error: null });
-  vm.runInNewContext(source, { URL, document: { getElementById: element }, window: { location: { origin: 'https://example.com', pathname: '/site/' }, ...(configured ? { MUSIC_ANGELS_SUPABASE_URL: 'https://example.supabase.co', MUSIC_ANGELS_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_test', supabase: { createClient: () => ({ auth }) } } : {}) } });
+  vm.runInNewContext(source, { URL, document: { getElementById: element }, window: { location: { origin: 'https://example.com', pathname: '/site/' }, ...(configured ? { MUSIC_ANGELS_SUPABASE_URL: 'https://example.supabase.co', MUSIC_ANGELS_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_test', supabase: sdkAvailable ? { createClient: () => ({ auth }) } : undefined } : {}) } });
   return { element, calls, event: (...args) => callback(...args), userSession };
 }
 const flush = () => new Promise(resolve => setImmediate(resolve));
@@ -34,7 +34,7 @@ const submit = ui => ui.element('auth-form').handlers.submit({ preventDefault() 
 test('missing configuration disables auth and explains availability', () => {
   const ui = setup(false);
   ui.element('auth-open').handlers.click();
-  assert.match(ui.element('auth-status').textContent, /unavailable/);
+  assert.match(ui.element('auth-status').textContent, /configuration is missing/);
   assert.equal(ui.element('auth-submit').disabled, true);
 });
 test('sign in, sign out, confirmation, reset, and recovery use the correct API', async () => {
@@ -66,4 +66,20 @@ test('sign in, sign out, confirmation, reset, and recovery use the correct API',
   ui.element('auth-confirm').value = 'new-password-example'; submit(ui); await flush();
   assert.equal(ui.calls.at(-1).name, 'updateUser');
   assert.equal(ui.element('auth-password').value, '');
+});
+
+test('SDK load failure is distinguished from missing deployment configuration', () => {
+  const ui = setup(true, false);
+  ui.element('auth-open').handlers.click();
+  assert.match(ui.element('auth-status').textContent, /service could not load/);
+  assert.equal(ui.element('auth-submit').disabled, true);
+});
+
+test('confirmation resend is a standalone button and cannot submit the login form', () => {
+  const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html'), 'utf8');
+  const button = html.match(/<button\b[^>]*\bid="auth-resend"[^>]*>/)?.[0];
+  assert.ok(button);
+  assert.match(button, /type="button"/);
+  const formEnd = html.indexOf('</form>', html.indexOf('id="auth-form"'));
+  assert.ok(html.indexOf(button) > formEnd);
 });

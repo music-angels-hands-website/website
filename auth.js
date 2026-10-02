@@ -16,6 +16,7 @@
   let mode = 'signin';
   let busy = false;
   let ready = false;
+  let unavailableReason = 'Account access is currently unavailable. Please try again later.';
   const redirectTo = new URL(window.location.pathname, window.location.origin).href;
   function message(text, error = false) {
     status.textContent = text;
@@ -69,7 +70,7 @@
   function check(result) { if (result.error) throw result.error; return result.data; }
   open.addEventListener('click', () => {
     if (!dialog.open) dialog.showModal();
-    if (!ready) message('Account access is currently unavailable. Please try again later.', true);
+    if (!ready) message(unavailableReason, true);
   });
   dialog.querySelector('.auth-close').addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
@@ -124,7 +125,16 @@
   try {
     const url = window.MUSIC_ANGELS_SUPABASE_URL;
     const key = window.MUSIC_ANGELS_SUPABASE_PUBLISHABLE_KEY;
-    if (!url || !key || !window.supabase) return;
+    if (!url || !key) {
+      unavailableReason = 'Account configuration is missing. Please reload the page or contact the site administrator.';
+      message(unavailableReason, true);
+      return;
+    }
+    if (!window.supabase?.createClient) {
+      unavailableReason = 'The sign-in service could not load. Please reload the page and check your connection.';
+      message(unavailableReason, true);
+      return;
+    }
     if (!key.startsWith('sb_publishable_')) throw new Error('A public publishable key is required.');
     client = window.supabase.createClient(url, key, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'implicit' }
@@ -145,5 +155,8 @@
       ready = true;
       render();
     }).catch(() => message('Unable to connect. Please reload and try again.', true));
-  } catch { message('Account access is currently unavailable. Please try again later.', true); }
+  } catch {
+    unavailableReason = 'The sign-in service could not initialize. Please reload the page or contact the site administrator.';
+    message(unavailableReason, true);
+  }
 })();

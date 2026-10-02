@@ -4,9 +4,8 @@ const siteNav = document.querySelector(".site-nav");
 const pages = Array.from(document.querySelectorAll("[data-page]"));
 const mainLinks = Array.from(document.querySelectorAll("[data-page-link]"));
 const pageSections = Array.from(document.querySelectorAll(".page-section[id]"));
-const floatingActionButtons = Array.from(document.querySelectorAll(".channel-button, .social-button"));
-const signupForm = document.querySelector(".signup-form");
-const formNote = document.querySelector(".form-note");
+const signupForm = document.querySelector("#how-to-join .signup-form");
+const formNote = document.querySelector("#how-to-join .form-note");
 const signupEndpoint =
   "https://script.google.com/macros/s/AKfycbwpBaYQNH2pRSkebK2lcntwi_ADO_IRxhikcmdIzi5SY7QyErBPaFa8HeC2P74rxxxu/exec";
 
@@ -58,9 +57,6 @@ function setActivePage(pageId) {
     link.classList.toggle("is-active", link.dataset.pageLink === pageId);
   });
 
-  floatingActionButtons.forEach((button) => {
-    button.hidden = pageId !== "home";
-  });
 }
 
 function getDefaultSubpage(page) {

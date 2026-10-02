@@ -27,3 +27,9 @@ Local generation: run `node scripts/generate-runtime-config.js` from the website
 Tests mock the SDK and cover unavailable configuration, sign-in/sign-out, password mismatch, sign-up confirmation, confirmation resend, reset email, and recovery password updates. Live authentication, email delivery, visual browser QA, and deployment are not verified; project configuration and the public publishable key are still required. This adds account identity only; it does not enforce authorization for public content or the separate CMS.
 
 References: https://supabase.com/docs/guides/auth/passwords and https://supabase.com/docs/reference/javascript/auth-onauthstatechange.
+
+## Login availability investigation (2026-10-02)
+
+The supplied screenshot shows a correctly named repository secret. The live runtime configuration was checked without displaying key values: the project URL and public publishable key are present. A fresh Chrome tab on the live site displayed enabled sign-in, create-account, reset, and resend buttons without the unavailable error. Actual account sign-in was not attempted.
+
+The earlier screenshot may reflect cached runtime configuration; this is an inference, not a confirmed browser trace. Added a cache version to the runtime-config script URL and bumped the auth script version. Initialization now distinguishes missing configuration, SDK loading failure, and client initialization failure. Tests cover configuration and SDK failures separately. These new source changes still require deployment. Repository secrets are supported by the existing workflow; moving the key into an environment secret is unnecessary.
