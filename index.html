@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-JbgXS8YkOFB1wgVShoNO8jcrXj5Txul+1VZoUeo69U0='; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com https://drive.google.com https://*.googleusercontent.com https://*.ggpht.com; connect-src 'self' https://script.google.com https://www.googleapis.com; frame-src https://drive.google.com; form-action 'self' https://script.google.com; upgrade-insecure-requests"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://cdn.jsdelivr.net 'sha256-JbgXS8YkOFB1wgVShoNO8jcrXj5Txul+1VZoUeo69U0='; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com https://drive.google.com https://*.googleusercontent.com https://*.ggpht.com; connect-src 'self' https://script.google.com https://www.googleapis.com https://*.supabase.co; frame-src https://drive.google.com; form-action 'self' https://script.google.com; upgrade-insecure-requests"
     />
     <meta
       name="description"
@@ -60,7 +60,7 @@
       }
     </script>
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="styles.css?v=20260913-annual-giving" />
+    <link rel="stylesheet" href="styles.css?v=20261002-auth" />
   </head>
   <body>
     <header class="site-header">
@@ -81,6 +81,7 @@
         <a href="#gallery" data-page-link="gallery">Gallery</a>
         <a href="#news" data-page-link="news" data-default-target="latest-news">Angels Times</a>
         <a href="#join" data-page-link="join" data-default-target="how-to-join">Join/Volunteer</a>
+        <button class="auth-nav-button" id="auth-open" type="button" aria-controls="auth-dialog">Sign in</button>
       </nav>
     </header>
 
@@ -371,7 +372,41 @@
       <a class="qr-direct-link" href="https://musicangelshands.com/" target="_blank" rel="noopener noreferrer">Open website in a new tab</a>
     </dialog>
 
+    <dialog class="auth-dialog" id="auth-dialog" aria-labelledby="auth-title">
+      <button class="dialog-close auth-close" type="button" aria-label="Close account window">×</button>
+      <p class="eyebrow">Music Angels Hands</p>
+      <h2 id="auth-title">Sign in</h2>
+      <div class="auth-tabs" aria-label="Account actions">
+        <button type="button" data-auth-mode="signin">Sign in</button>
+        <button type="button" data-auth-mode="signup">Create account</button>
+      </div>
+      <p id="auth-account" hidden></p>
+      <form id="auth-form" class="signup-form auth-form">
+        <div id="auth-email-field">
+          <label for="auth-email">Email</label>
+          <input id="auth-email" type="email" autocomplete="email" maxlength="254" required />
+        </div>
+        <div id="auth-password-field">
+          <label for="auth-password">Password</label>
+          <input id="auth-password" type="password" autocomplete="current-password" required />
+        </div>
+        <div id="auth-confirm-field" hidden>
+          <label for="auth-confirm">Confirm password</label>
+          <input id="auth-confirm" type="password" autocomplete="new-password" />
+        </div>
+        <button class="button button-primary" id="auth-submit" type="submit">Sign in</button>
+      </form>
+      <div class="auth-actions">
+        <button type="button" id="auth-reset">Forgot password?</button>
+        <button type="button" id="auth-resend">Resend confirmation email</button>
+        <button type="button" id="auth-signout" hidden>Sign out</button>
+      </div>
+      <p class="form-note" id="auth-status" role="status" aria-live="polite"></p>
+    </dialog>
+
     <script src="config.local.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.102.0/dist/umd/supabase.js"></script>
+    <script defer src="auth.js?v=20261002-auth"></script>
     <script src="script.js?v=20260913-annual-giving"></script>
   </body>
 </html>

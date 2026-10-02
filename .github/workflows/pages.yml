@@ -32,10 +32,11 @@ jobs:
         run: node scripts/generate-content-manifest.js
 
       - name: Create runtime config
-        run: |
-          printf 'window.MUSIC_ANGELS_GOOGLE_API_KEY = "%s";\n' "${GOOGLE_DRIVE_API_KEY}" > config.local.js
+        run: node scripts/generate-runtime-config.js
         env:
           GOOGLE_DRIVE_API_KEY: ${{ secrets.GOOGLE_DRIVE_API_KEY }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || 'https://oacathzajaowpcrcmmmb.supabase.co' }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

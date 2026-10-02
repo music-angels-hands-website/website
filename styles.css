@@ -1341,3 +1341,19 @@ dialog[open] {
   position: relative;
   z-index: 1;
 }
+
+/* Email account authentication */
+.auth-nav-button { font: inherit; color: var(--teal); background: var(--paper); border: 1px solid var(--teal); border-radius: var(--radius-sm); padding: 8px 14px; cursor: pointer; }
+.auth-dialog { width: min(440px, calc(100% - 32px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 32px; border: 1px solid var(--line-warm); border-radius: var(--radius-lg); color: var(--ink); background: var(--paper); }
+.auth-dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+.auth-close { float: right; }
+.auth-tabs, .auth-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
+.auth-tabs button, .auth-actions button { font: inherit; color: var(--teal); background: transparent; border: 1px solid var(--line-warm); border-radius: var(--radius-sm); padding: 8px 12px; cursor: pointer; }
+.auth-tabs button[aria-pressed="true"] { background: var(--teal); color: white; }
+.auth-form { padding: 0; border: 0; box-shadow: none; background: transparent; display: grid; gap: 16px; }
+.auth-form > div { display: grid; gap: 6px; }
+.auth-dialog [hidden] { display: none !important; }
+.auth-dialog button:disabled { opacity: 0.6; cursor: wait; }
+.auth-dialog .form-note { overflow-wrap: anywhere; }
+.auth-dialog .form-note[data-error="true"] { color: #a32929; }
+#auth-account { overflow-wrap: anywhere; }
