@@ -60,7 +60,7 @@
       }
     </script>
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="styles.css?v=20261002-auth" />
+    <link rel="stylesheet" href="styles.css?v=20261017-account-menu-2" />
   </head>
   <body>
     <header class="site-header">
@@ -81,7 +81,7 @@
         <a href="#gallery" data-page-link="gallery">Gallery</a>
         <a href="#news" data-page-link="news" data-default-target="latest-news">Angels Times</a>
         <a href="#join" data-page-link="join" data-default-target="how-to-join">Join/Volunteer</a>
-        <div class="account-nav"><button class="auth-nav-button" id="auth-open" type="button" aria-controls="auth-dialog">Sign in</button><div id="account-menu" hidden><a href="#volunteer" data-page-link="volunteer">Volunteer records</a></div></div>
+        <div class="account-nav"><button class="auth-nav-button" id="auth-open" type="button" aria-controls="auth-dialog" aria-expanded="false">Sign in</button><div id="account-menu" hidden><a id="account-volunteer" href="#volunteer" data-page-link="volunteer">Volunteer records</a><button id="account-settings" type="button">Account settings</button></div></div>
       </nav>
     </header>
 
@@ -430,7 +430,7 @@
 
     <script src="config.local.js?v=20261002-auth-config-2"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.102.0/dist/umd/supabase.js"></script>
-    <script defer src="auth.js?v=20261002-auth-config-2"></script>
+    <script defer src="auth.js?v=20261017-account-menu-2"></script>
     <script type="module" src="volunteer.js?v=20261017"></script>
     <script src="script.js?v=20261002-signup-scope"></script>
   </body>

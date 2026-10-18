@@ -83,3 +83,23 @@ test('confirmation resend is a standalone button and cannot submit the login for
   const formEnd = html.indexOf('</form>', html.indexOf('id="auth-form"'));
   assert.ok(html.indexOf(button) > formEnd);
 });
+
+
+test('signed-in Account toggles volunteer menu and settings retains account dialog', async () => {
+  const ui = setup(); await flush();
+  ui.event('SIGNED_IN', ui.userSession);
+  assert.equal(ui.element('account-menu').hidden, true);
+  ui.element('auth-open').handlers.click();
+  assert.equal(ui.element('account-menu').hidden, false);
+  assert.equal(ui.element('auth-open')['aria-expanded'], 'true');
+  assert.notEqual(ui.element('auth-dialog').open, true);
+  ui.element('account-volunteer').handlers.click();
+  assert.equal(ui.element('account-menu').hidden, true);
+  ui.element('auth-open').handlers.click();
+  ui.element('account-settings').handlers.click();
+  assert.equal(ui.element('auth-dialog').open, true);
+  assert.equal(ui.element('account-menu').hidden, true);
+  ui.event('SIGNED_OUT', null);
+  assert.equal(ui.element('auth-open').textContent, 'Sign in');
+  assert.equal(ui.element('account-menu').hidden, true);
+});

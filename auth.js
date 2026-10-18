@@ -11,6 +11,7 @@
   const reset = document.getElementById('auth-reset');
   const resend = document.getElementById('auth-resend');
   const tabs = dialog.querySelector('.auth-tabs');
+  let menuOpen = false;
   let client;
   let session = null;
   let mode = 'signin';
@@ -29,7 +30,10 @@
     document.getElementById('auth-title').textContent = account ? 'Your account' : titles[mode];
     open.textContent = session ? 'Account' : 'Sign in';
     const accountMenu = document.getElementById('account-menu');
-    if (accountMenu) accountMenu.hidden = !session;
+    if (!account) menuOpen = false;
+    if (accountMenu) accountMenu.hidden = !menuOpen;
+    open.setAttribute('aria-expanded', String(menuOpen));
+    open.setAttribute('aria-controls', account ? 'account-menu' : 'auth-dialog');
     const volunteerLink = document.getElementById('auth-volunteer');
     if (volunteerLink) volunteerLink.hidden = !account;
     window.musicAngelsAuth = { getSession: () => client?.auth.getSession(), rpc: (name, args) => client?.rpc(name, args) };
@@ -74,7 +78,30 @@
     finally { busy = false; password.value = ''; confirm.value = ''; render(); }
   }
   function check(result) { if (result.error) throw result.error; return result.data; }
+  function closeAccountMenu() {
+    menuOpen = false;
+    const menu = document.getElementById('account-menu');
+    if (menu) menu.hidden = true;
+    open.setAttribute('aria-expanded', 'false');
+  }
+  document.addEventListener?.('click', event => {
+    if (!event.target.closest?.('.account-nav')) closeAccountMenu();
+  });
+  document.addEventListener?.('keydown', event => {
+    if (event.key === 'Escape' && menuOpen) { closeAccountMenu(); open.focus(); }
+  });
+  document.getElementById('account-volunteer')?.addEventListener('click', closeAccountMenu);
+  document.getElementById('account-settings')?.addEventListener('click', () => {
+    closeAccountMenu();
+    if (!dialog.open) dialog.showModal();
+  });
   open.addEventListener('click', () => {
+    if (session && mode !== 'update') {
+      menuOpen = !menuOpen;
+      document.getElementById('account-menu').hidden = !menuOpen;
+      open.setAttribute('aria-expanded', String(menuOpen));
+      return;
+    }
     if (!dialog.open) dialog.showModal();
     if (!ready) message(unavailableReason, true);
   });

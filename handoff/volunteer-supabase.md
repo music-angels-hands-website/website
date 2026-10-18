@@ -90,3 +90,7 @@ Official references: [RLS](https://supabase.com/docs/guides/database/postgres/ro
 ## English-only data and interface
 
 All new volunteer interface labels, location display names, setup examples, and documentation use English. For Orange County use display_name `Orange County` and time_zone `America/Los_Angeles`. Reuse the actual existing Android location_code exactly; do not translate or rename identifiers. Existing member names and activity names from attendance are displayed as stored; this change does not translate or overwrite production records.
+
+## Account menu fix
+
+The signed-in Account button now explicitly toggles a dropdown containing Volunteer records and Account settings. Outside clicks, Escape, navigation, and sign-out close the dropdown. Account settings opens the existing account dialog. Updated auth and stylesheet URL versions prevent reuse of pre-volunteer browser-cached assets. Production HTML already included volunteer markup when inspected; unchanged asset version URLs made cached older auth/styles a possible source of inconsistent behavior.
