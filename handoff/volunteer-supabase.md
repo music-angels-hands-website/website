@@ -98,3 +98,7 @@ The signed-in Account button now explicitly toggles a dropdown containing Volunt
 ## Empty volunteer records message
 
 An unmatched membership connection or a linked membership with no attendance history displays: "You are not registered as a volunteer. If this is incorrect, please contact the attendance coordinator to have your records corrected." A date/activity filter with zero results still displays "No volunteer records in this period." so an existing volunteer is not misclassified by a narrow filter. Errors and unavailable locations retain their own messages.
+
+## Visible errors and diagnostics
+
+Volunteer requests now show Supabase error code, HTTP status, message, details and hint in a visible English alert with Try again. Requests time out after 20 seconds. An independent classic script catches module load/runtime errors and reports PAGE_NOT_READY when the volunteer module fails to initialize within 15 seconds. URLs, email addresses and key/token patterns are redacted before rendering with textContent. The diagnostics script is included in the Pages artifact. This is read-only UI diagnostics; DB permissions are unchanged.

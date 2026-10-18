@@ -60,7 +60,7 @@
       }
     </script>
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="styles.css?v=20261017-account-menu-2" />
+    <link rel="stylesheet" href="styles.css?v=20261017-errors" />
   </head>
   <body>
     <header class="site-header">
@@ -331,6 +331,11 @@
           <p class="eyebrow">Your service journey</p><h1 id="volunteer-title">Volunteer records</h1>
           <p>View your attendance and service hours. Reporting year: June 1–May 31.</p>
           <p id="volunteer-status" role="status" aria-live="polite">Sign in to view your records.</p>
+          <div id="volunteer-error" class="volunteer-error" role="alert" hidden>
+            <strong>Volunteer records could not be loaded.</strong>
+            <pre id="volunteer-error-details"></pre>
+            <button type="button" id="volunteer-retry">Try again</button>
+          </div>
           <button type="button" id="volunteer-signin">Sign in</button>
           <form id="volunteer-filters" hidden>
             <label>Location <select id="volunteer-location" required></select></label>
@@ -431,7 +436,8 @@
     <script src="config.local.js?v=20261002-auth-config-2"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.102.0/dist/umd/supabase.js"></script>
     <script defer src="auth.js?v=20261017-account-menu-2"></script>
-    <script type="module" src="volunteer.js?v=20261017-empty-records"></script>
+    <script src="volunteer-diagnostics.js?v=20261017-errors"></script>
+    <script type="module" src="volunteer.js?v=20261017-errors"></script>
     <script src="script.js?v=20261002-signup-scope"></script>
   </body>
 </html>

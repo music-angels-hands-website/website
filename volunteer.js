@@ -8,7 +8,22 @@ import { sessions } from './volunteer-sessions.mjs';
   let loadedFilter = '';
   const duration = seconds => `${Math.floor(seconds / 3600)}h ${Math.floor(seconds % 3600 / 60)}m`;
   const noVolunteerMessage = 'You are not registered as a volunteer. If this is incorrect, please contact the attendance coordinator to have your records corrected.';
-  const status = text => { el('status').textContent = text; };
+  const status = text => {
+    el('status').textContent = text;
+    if (el('error')) el('error').hidden = true;
+  };
+  function showError(error, context) {
+    if (window.musicAngelsVolunteerError) window.musicAngelsVolunteerError(error, context);
+    else status(`Error${error?.code ? ` [${error.code}]` : ''}: ${error?.message || 'Unable to load volunteer records.'}`);
+  }
+  async function withTimeout(promise) {
+    let timer;
+    try {
+      return await Promise.race([promise, new Promise((_, reject) => {
+        timer = setTimeout(() => reject(Object.assign(new Error('The request timed out. Check your connection and try again.'), { code: 'REQUEST_TIMEOUT' })), 20000);
+      })]);
+    } finally { clearTimeout(timer); }
+  }
   function clear() {
     el('rows').replaceChildren();
     el('summary').textContent = '';
@@ -17,13 +32,12 @@ import { sessions } from './volunteer-sessions.mjs';
     cursor = null;
   }
   async function api(operation, location = '') {
-    const result = await window.musicAngelsAuth?.getSession();
-    if (result?.error || !result?.data?.session) throw new Error('Please sign in to view your records.');
-    const response = await window.musicAngelsAuth.rpc('volunteer_portal', { operation, selected_location: location });
-    if (!response || response.error) {
-      if (response?.error?.code === '42501') throw new Error('Confirm your email and sign in again to view records.');
-      throw new Error('Volunteer records are unavailable. Please contact your administrator or retry.');
-    }
+    const result = await withTimeout(window.musicAngelsAuth?.getSession());
+    if (result?.error) throw result.error;
+    if (!result?.data?.session) throw new Error('Please sign in to view your records.');
+    const response = await withTimeout(window.musicAngelsAuth.rpc('volunteer_portal', { operation, selected_location: location }));
+    if (response?.error) throw Object.assign(new Error(response.error.message || 'Supabase request failed.'), response.error, { status: response.status });
+    if (!response?.data || typeof response.data !== 'object') throw Object.assign(new Error('Supabase returned an empty or invalid response.'), { code: 'INVALID_RESPONSE' });
     return response.data;
   }
   function defaultDates() {
@@ -70,15 +84,17 @@ import { sessions } from './volunteer-sessions.mjs';
       cursor = data.next_cursor;
       el('more').hidden = !cursor;
       status(data.record_count ? 'Hours are calculated from attendance. Open records contribute zero hours. Totals are rounded after summing seconds.' : raw.events.length === 0 ? noVolunteerMessage : 'No volunteer records in this period.');
-    } catch (error) { if (ticket === revision) { status(error.message); el('more').hidden = !cursor; } }
+    } catch (error) { if (ticket === revision) { showError(error, 'Loading attendance records'); el('more').hidden = !cursor; } }
   }
   async function initialize() {
     if (window.location.hash !== '#volunteer' && window.location.hash !== '#volunteer-records') return;
     const ticket = ++revision;
     clear(); el('filters').hidden = true;
     try {
-      const result = await window.musicAngelsAuth?.getSession();
+      const result = await withTimeout(window.musicAngelsAuth?.getSession());
       if (ticket !== revision) return;
+      if (result?.error) throw result.error;
+      if (!window.musicAngelsAuth) throw Object.assign(new Error('The sign-in service has not initialized. Check the site configuration and reload.'), { code: 'AUTH_NOT_READY' });
       const session = result?.data?.session;
       el('signin').hidden = Boolean(session);
       if (!session) { status('Sign in to view your volunteer records.'); return; }
@@ -93,7 +109,7 @@ import { sessions } from './volunteer-sessions.mjs';
       if (!locations.length) { status('No volunteer locations are configured. Contact your administrator.'); return; }
       el('filters').hidden = false;
       defaultDates(); await load();
-    } catch (error) { if (ticket === revision) status(error.message); }
+    } catch (error) { if (ticket === revision) showError(error, 'Initializing volunteer records'); }
   }
   el('signin').addEventListener('click', () => document.getElementById('auth-open').click());
   el('filters').addEventListener('submit', event => { event.preventDefault(); load(); });
@@ -107,9 +123,10 @@ import { sessions } from './volunteer-sessions.mjs';
       if (ticket !== revision) return;
       if (data.status === 'linked') await load();
       else status(data.status === 'review_required' ? 'Membership needs administrator review. Please contact your location administrator.' : noVolunteerMessage);
-    } catch (error) { if (ticket === revision) status(error.message); }
+    } catch (error) { if (ticket === revision) showError(error, 'Connecting volunteer membership'); }
     finally { el('link').disabled = false; }
   });
+  window.addEventListener('volunteer-retry', initialize);
   window.addEventListener('hashchange', initialize);
   window.addEventListener('music-angels-auth', () => {
     // Clear private data immediately, even when this page is hidden.
@@ -117,5 +134,6 @@ import { sessions } from './volunteer-sessions.mjs';
     status('Sign in to view your volunteer records.');
     initialize();
   });
+  window.musicAngelsVolunteerReady = true;
   initialize();
 })();
