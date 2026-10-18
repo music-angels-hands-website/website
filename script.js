@@ -60,7 +60,7 @@ function setActivePage(pageId) {
 }
 
 function getDefaultSubpage(page) {
-  return page?.querySelector(".sub-nav a")?.getAttribute("href")?.replace("#", "") || page?.id || "home";
+  return page?.querySelector(".sub-nav a")?.getAttribute("href")?.replace("#", "") || page?.querySelector(".page-section[id]")?.id || page?.id || "home";
 }
 
 function setActiveSubpage(pageId) {

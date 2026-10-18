@@ -102,3 +102,7 @@ An unmatched membership connection or a linked membership with no attendance his
 ## Visible errors and diagnostics
 
 Volunteer requests now show Supabase error code, HTTP status, message, details and hint in a visible English alert with Try again. Requests time out after 20 seconds. An independent classic script catches module load/runtime errors and reports PAGE_NOT_READY when the volunteer module fails to initialize within 15 seconds. URLs, email addresses and key/token patterns are redacted before rendering with textContent. The diagnostics script is included in the Pages artifact. This is read-only UI diagnostics; DB permissions are unchanged.
+
+## Blank page routing fix
+
+Reproduced on the live site: #volunteer selected the outer page as the default subpage, removing is-active-subpage from the inner volunteer-records section. CSS then hid all content, including diagnostics. Navigating directly to #volunteer-records revealed the page and configured Orange County location. The shared router now falls back to the first actual page section when a page has no sub-navigation. The script URL version was updated to invalidate old cached routing code. Regression tests cover both hash paths and preserve existing explicit sub-navigation behavior.
