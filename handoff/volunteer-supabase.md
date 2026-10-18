@@ -94,3 +94,7 @@ All new volunteer interface labels, location display names, setup examples, and 
 ## Account menu fix
 
 The signed-in Account button now explicitly toggles a dropdown containing Volunteer records and Account settings. Outside clicks, Escape, navigation, and sign-out close the dropdown. Account settings opens the existing account dialog. Updated auth and stylesheet URL versions prevent reuse of pre-volunteer browser-cached assets. Production HTML already included volunteer markup when inspected; unchanged asset version URLs made cached older auth/styles a possible source of inconsistent behavior.
+
+## Empty volunteer records message
+
+An unmatched membership connection or a linked membership with no attendance history displays: "You are not registered as a volunteer. If this is incorrect, please contact the attendance coordinator to have your records corrected." A date/activity filter with zero results still displays "No volunteer records in this period." so an existing volunteer is not misclassified by a narrow filter. Errors and unavailable locations retain their own messages.

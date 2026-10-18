@@ -7,6 +7,7 @@ import { sessions } from './volunteer-sessions.mjs';
   let locations = [];
   let loadedFilter = '';
   const duration = seconds => `${Math.floor(seconds / 3600)}h ${Math.floor(seconds % 3600 / 60)}m`;
+  const noVolunteerMessage = 'You are not registered as a volunteer. If this is incorrect, please contact the attendance coordinator to have your records corrected.';
   const status = text => { el('status').textContent = text; };
   function clear() {
     el('rows').replaceChildren();
@@ -68,7 +69,7 @@ import { sessions } from './volunteer-sessions.mjs';
       el('table').hidden = !data.record_count;
       cursor = data.next_cursor;
       el('more').hidden = !cursor;
-      status(data.record_count ? 'Hours are calculated from attendance. Open records contribute zero hours. Totals are rounded after summing seconds.' : 'No volunteer records in this period.');
+      status(data.record_count ? 'Hours are calculated from attendance. Open records contribute zero hours. Totals are rounded after summing seconds.' : raw.events.length === 0 ? noVolunteerMessage : 'No volunteer records in this period.');
     } catch (error) { if (ticket === revision) { status(error.message); el('more').hidden = !cursor; } }
   }
   async function initialize() {
@@ -105,7 +106,7 @@ import { sessions } from './volunteer-sessions.mjs';
       const data = await api('link', el('location').value);
       if (ticket !== revision) return;
       if (data.status === 'linked') await load();
-      else status(data.status === 'review_required' ? 'Membership needs administrator review. Please contact your location administrator.' : 'No matching membership was found. Ask your administrator to verify your registered email and location.');
+      else status(data.status === 'review_required' ? 'Membership needs administrator review. Please contact your location administrator.' : noVolunteerMessage);
     } catch (error) { if (ticket === revision) status(error.message); }
     finally { el('link').disabled = false; }
   });
