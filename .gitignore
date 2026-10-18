@@ -144,3 +144,6 @@ contents/manifest.json
 
 # Local runtime configuration must not be committed.
 config.local.js
+
+# Public build output
+_site/

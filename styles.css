@@ -1340,3 +1340,18 @@ dialog[open] {
 .auth-dialog .form-note { overflow-wrap: anywhere; }
 .auth-dialog .form-note[data-error="true"] { color: #a32929; }
 #auth-account { overflow-wrap: anywhere; }
+
+/* Account and private volunteer records */
+.account-nav { position: relative; }
+#account-menu { position: absolute; top: 100%; right: 0; min-width: 230px; padding: 12px; background: #fff; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 8px 24px #0002; z-index: 30; }
+#account-menu a { display: block; white-space: normal; }
+#volunteer .page-section { max-width: 1100px; margin: auto; padding: 40px 24px; }
+#volunteer-filters { display: flex; gap: 16px; align-items: end; flex-wrap: wrap; margin: 24px 0; }
+#volunteer-filters[hidden], #account-menu[hidden] { display: none; }
+#volunteer-filters label { display: grid; gap: 6px; }
+#volunteer input, #volunteer select, #volunteer button { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font: inherit; }
+#volunteer button { cursor: pointer; }
+.volunteer-table-wrap { overflow-x: auto; }
+#volunteer-table { width: 100%; border-collapse: collapse; }
+#volunteer-table th, #volunteer-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+@media (max-width: 800px) { #account-menu { position: static; box-shadow: none; } }

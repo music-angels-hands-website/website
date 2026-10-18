@@ -81,7 +81,7 @@
         <a href="#gallery" data-page-link="gallery">Gallery</a>
         <a href="#news" data-page-link="news" data-default-target="latest-news">Angels Times</a>
         <a href="#join" data-page-link="join" data-default-target="how-to-join">Join/Volunteer</a>
-        <button class="auth-nav-button" id="auth-open" type="button" aria-controls="auth-dialog">Sign in</button>
+        <div class="account-nav"><button class="auth-nav-button" id="auth-open" type="button" aria-controls="auth-dialog">Sign in</button><div id="account-menu" hidden><a href="#volunteer" data-page-link="volunteer">Volunteer records</a></div></div>
       </nav>
     </header>
 
@@ -326,6 +326,28 @@
           </div>
         </section>
       </section>
+      <section class="page" id="volunteer" data-page="volunteer" aria-labelledby="volunteer-title">
+        <div class="page-section is-active-subpage" id="volunteer-records">
+          <p class="eyebrow">Your service journey</p><h1 id="volunteer-title">Volunteer records</h1>
+          <p>View your attendance and service hours. Reporting year: June 1–May 31.</p>
+          <p id="volunteer-status" role="status" aria-live="polite">Sign in to view your records.</p>
+          <button type="button" id="volunteer-signin">Sign in</button>
+          <form id="volunteer-filters" hidden>
+            <label>Location <select id="volunteer-location" required></select></label>
+            <label>From <input id="volunteer-from" type="date" required></label>
+            <label>To <input id="volunteer-to" type="date" required></label>
+            <label>Activity <input id="volunteer-activity" type="text" maxlength="200" placeholder="All activities"></label>
+            <button type="submit">View records</button>
+            <button type="button" id="volunteer-link">Connect my membership</button>
+          </form>
+          <p id="volunteer-summary"></p>
+          <div class="volunteer-table-wrap"><table id="volunteer-table" hidden>
+            <thead><tr><th>Date</th><th>Activity</th><th>Check in</th><th>Check out</th><th>Hours</th><th>Status</th></tr></thead>
+            <tbody id="volunteer-rows"></tbody>
+          </table></div>
+          <button type="button" id="volunteer-more" hidden>Load more</button>
+        </div>
+      </section>
     </main>
 
     <footer class="site-footer">
@@ -382,6 +404,7 @@
         <button type="button" data-auth-mode="signup">Create account</button>
       </div>
       <p id="auth-account" hidden></p>
+      <a id="auth-volunteer" href="#volunteer" hidden>Volunteer records</a>
       <form id="auth-form" class="signup-form auth-form">
         <div id="auth-email-field">
           <label for="auth-email">Email</label>
@@ -408,6 +431,7 @@
     <script src="config.local.js?v=20261002-auth-config-2"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.102.0/dist/umd/supabase.js"></script>
     <script defer src="auth.js?v=20261002-auth-config-2"></script>
+    <script type="module" src="volunteer.js?v=20261017"></script>
     <script src="script.js?v=20261002-signup-scope"></script>
   </body>
 </html>

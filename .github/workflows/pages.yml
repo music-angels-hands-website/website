@@ -38,10 +38,16 @@ jobs:
           SUPABASE_URL: ${{ vars.SUPABASE_URL || 'https://oacathzajaowpcrcmmmb.supabase.co' }}
           SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
 
+      - name: Prepare public artifact
+        run: |
+          mkdir _site
+          cp index.html styles.css script.js auth.js volunteer.js volunteer-sessions.mjs config.local.js content-manifest.json robots.txt sitemap.xml _site/
+          cp -R assets contents _site/
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
       - name: Deploy to GitHub Pages
         id: deployment

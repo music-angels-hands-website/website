@@ -28,6 +28,12 @@
     const titles = { signin: 'Sign in', signup: 'Create account', reset: 'Reset password', update: 'Set new password' };
     document.getElementById('auth-title').textContent = account ? 'Your account' : titles[mode];
     open.textContent = session ? 'Account' : 'Sign in';
+    const accountMenu = document.getElementById('account-menu');
+    if (accountMenu) accountMenu.hidden = !session;
+    const volunteerLink = document.getElementById('auth-volunteer');
+    if (volunteerLink) volunteerLink.hidden = !account;
+    window.musicAngelsAuth = { getSession: () => client?.auth.getSession(), rpc: (name, args) => client?.rpc(name, args) };
+    if (window.dispatchEvent) window.dispatchEvent(new Event('music-angels-auth'));
     const accountText = document.getElementById('auth-account');
     accountText.hidden = !account;
     accountText.textContent = session?.user?.email || '';
@@ -72,6 +78,7 @@
     if (!dialog.open) dialog.showModal();
     if (!ready) message(unavailableReason, true);
   });
+  document.getElementById('auth-volunteer')?.addEventListener('click', () => dialog.close());
   dialog.querySelector('.auth-close').addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
   dialog.addEventListener('close', () => { password.value = ''; confirm.value = ''; });
